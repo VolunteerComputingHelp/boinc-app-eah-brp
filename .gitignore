@@ -1,0 +1,8 @@
+.pc
+*.o
+einsteinbinary
+
+debian/.debhelper
+debian/*stamp
+debian/*.log
+debian/boinc-app-eah-brp
