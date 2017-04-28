@@ -1,0 +1,21 @@
+boinc-app-eah-brp
+=================
+
+This package nicely contributes a binary for the BOINC volunteer computing
+infrastructure. It provides a binary for the search of binary radio pulsars.
+which is a sub-project for the Einstein@Home distributed computing project.
+
+To best possibly help with the computation, it is suggested to recompile the
+package locally. To indicate that there are no ambitions to upload the 
+compiled-to-local-package to the Debian archive and prepare for the presumed
+optimal set of compiler options, add "local" to the DEB_BUILD_OPTIONS.
+
+The following you may perform on any Debian platform that understands the
+-march=native flag:
+
+	sudo apt-get build-dep boinc-app-seti
+	DEB_BUILD_OPTIONS=local apt-get source --compile boinc-app-eah-brp
+	sudo dpkg -i boinc-app-eah-brp_*.deb
+
+
+ -- Steffen Moeller <moeller@debian.org>  Thu, 27 Apr 2017 21:52:08 +0200

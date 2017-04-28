@@ -1,0 +1,16 @@
+Index: boinc-app-eah-brp/erp_execinfo_plus.c
+===================================================================
+--- boinc-app-eah-brp.orig/erp_execinfo_plus.c
++++ boinc-app-eah-brp/erp_execinfo_plus.c
+@@ -22,6 +22,11 @@
+ 
+ #define HAVE_DECL_BASENAME 1
+ 
++#include <stdio.h>
++#include <string.h>
++#include <malloc.h>
++#include <errno.h>
++
+ #include "sys/stat.h"
+ #include "sysdep.h"
+ #include "bfd.h"

@@ -1,0 +1,55 @@
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -26,26 +26,30 @@ EINSTEIN_RADIO_INSTALL?=$(PWD)
+ CXX ?= g++
+ 
+ # variables
+-LIBS += -Wl,-Bstatic
++#LIBS += -Wl,-Bstatic
+ LIBS += -L$(EINSTEIN_RADIO_INSTALL)/lib64 -L$(EINSTEIN_RADIO_INSTALL)/lib
+-LIBS += $(shell $(EINSTEIN_RADIO_INSTALL)/bin/gsl-config --libs)
++#LIBS += $(shell gsl-config --libs)
+ LIBS += $(shell export PKG_CONFIG_PATH=$(EINSTEIN_RADIO_INSTALL)/lib/pkgconfig && pkg-config --libs fftw3f)
+-LIBS += $(shell $(EINSTEIN_RADIO_INSTALL)/bin/xml2-config --libs)
+-LIBS += -lboinc_api -lboinc
++LIBS += $(shell xml2-config --libs)
++LIBS += -L/usr/lib/$(dpkg-architecture -qDEB_BUILD_GNU_TYPE) -lboinc_api -lboinc
+ LIBS += -lbfd -liberty
+ LIBS += -L/usr/lib
+ LIBS += -lstdc++
+-LIBS += -Wl,-Bdynamic
++#LIBS += -Wl,-Bdynamic
++LIBS += -lxml2 -lgsl -lgslcblas
+ LIBS += -lpthread -lm -lc
+-LIBS += $(EINSTEIN_RADIO_INSTALL)/lib/libz.a
++LIBS += -lz
+ 
+-LDFLAGS += -static-libgcc
++#LDFLAGS += -static-libgcc
+ 
+-CXXFLAGS += -I$(EINSTEIN_RADIO_INSTALL)/include
+-CXXFLAGS += $(shell $(EINSTEIN_RADIO_INSTALL)/bin/gsl-config --cflags)
+-CXXFLAGS += $(shell export PKG_CONFIG_PATH=$(EINSTEIN_RADIO_INSTALL)/lib/pkgconfig && pkg-config --cflags fftw3f)
+-CXXFLAGS += $(shell $(EINSTEIN_RADIO_INSTALL)/bin/xml2-config --cflags)
+-CXXFLAGS += -I$(EINSTEIN_RADIO_INSTALL)/include/boinc
++CXXFLAGS += -I.
++CXXFLAGS += -I/usr/include/boinc
++CXXFLAGS += -I/usr/include/boinc/lib
++CXXFLAGS += -I/usr/include/libxml2
++CXXFLAGS += -I/usr/include/libiberty
++CXXFLAGS += $(shell gsl-config --cflags)
++CXXFLAGS += $(shell pkg-config --cflags fftw3f)
++CXXFLAGS += $(shell xml2-config --cflags)
+ CXXFLAGS += -DHAVE_INLINE -DBOINCIFIED
+ CXXFLAGS += -DUSE_CPU_RESAMP -DUSE_FFTW_FFT
+ 
+@@ -53,6 +57,7 @@ DEPS = Makefile
+ OBJS = demod_binary.o demod_binary_resamp_cpu.o demod_binary_fft_fftw.o demod_binary_hs_cpu.o rngmed.o erp_boinc_ipc.o erp_getopt.o erp_getopt1.o erp_utilities.o erp_execinfo_plus.o hs_common.o
+ EINSTEINBINARY_TARGET ?= einsteinbinary
+ TARGET = $(EINSTEINBINARY_TARGET)
++CXXFLAGS += -DTARGET=\"$(TARGET)\"
+ 
+ # primary role based tagets
+ default: release

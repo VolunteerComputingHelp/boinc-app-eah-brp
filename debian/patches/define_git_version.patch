@@ -1,0 +1,6 @@
+Index: boinc-app-eah-brp/erp_git_version.h
+===================================================================
+--- /dev/null
++++ boinc-app-eah-brp/erp_git_version.h
+@@ -0,0 +1 @@
++#define ERP_GIT_VERSION "0"

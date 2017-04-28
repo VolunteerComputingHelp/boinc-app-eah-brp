@@ -1,0 +1,3 @@
+debian/extra/app_info.xml   usr/share/boinc-app-seti
+debian/extra/eah_brp.cfg       usr/share/boinc-apps/info
+einsteinbinary  usr/lib/boinc-app-seti/

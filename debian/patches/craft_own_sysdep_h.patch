@@ -1,0 +1,17 @@
+Index: boinc-app-eah-brp/sysdep.h
+===================================================================
+--- /dev/null
++++ boinc-app-eah-brp/sysdep.h
+@@ -0,0 +1,12 @@
++#include <stdarg.h>
++
++#define _(X) X
++
++#define PARAMS(args)		args
++#define VPARAMS(args)		args
++//#define VPARAMS(args)		(va_alist) va_dcl
++#define VA_START(valist)	va_start(valist)
++
++#define VA_OPEN(AP, VAR)		{ va_list AP; va_start(AP,VAR); { struct Qdmy
++#define VA_CLOSE(AP)			} va_end(AP); }
++#define VA_FIXEDARG(AP, TYPE, NAME)	TYPE NAME = va_arg(AP, TYPE)

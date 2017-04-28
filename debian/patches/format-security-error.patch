@@ -1,0 +1,31 @@
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -551,7 +551,8 @@ int MAIN (int argc, char *argv[])
+       logMessage(info, true, "Checkpoint file unavailable: %s (%s).\n", uvar.checkpointfile, strerror(errno));
+       logMessage(info, false, "Starting from scratch...\n");
+       template_counter = 0;
+-      if(snprintf(cp_head.originalfile, sizeof(cp_head.originalfile), uvar.inputfile) >= sizeof(cp_head.originalfile))
++      // FIXME: This looks weird and demands a comment at least (Steffen)
++      if(snprintf(cp_head.originalfile, sizeof(cp_head.originalfile), "%s", uvar.inputfile) >= sizeof(cp_head.originalfile))
+ 	{
+     	  logMessage(error, true, "Couldn't write input file %s name to checkpoint header.\n", uvar.inputfile);
+ 	  return(RADPUL_EFILE);
+Index: boinc-app-eah-brp/erp_utilities.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_utilities.cpp
++++ boinc-app-eah-brp/erp_utilities.cpp
+@@ -131,10 +131,10 @@ void logMessage(const ERP_LOGLEVEL logLe
+ 
+     // prepend log level if requested
+     if(showLevel) {
+-        fprintf(output, levelBuffer);
++        fprintf(output, "%s", levelBuffer);
+     }
+     else {
+-        fprintf(output, "------> ");
++        fprintf(output, "%s", "------> ");
+     }
+ 
+     // print log message

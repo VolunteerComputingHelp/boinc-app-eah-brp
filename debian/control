@@ -1,0 +1,35 @@
+Source: boinc-app-eah-brp
+Section: science
+Priority: optional
+Maintainer: Steffen Moeller <moeller@debian.org>
+Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev
+Standards-Version: 3.9.8
+Homepage: https://einsteinathome.org/application-source-code-and-license
+#Vcs-Git: https://anonscm.debian.org/collab-maint/boinc-app-eah-brp.git
+#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/boinc-app-eah-brp.git
+
+Package: boinc-app-eah-brp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, boinc-client
+Recommends: boinc-manager
+Suggests: boinc-app-seti
+Description: BOINC extension for Einstein at Home binary pulsar search
+ BOINC (Berkeley Open Infrastructure for Network Computing) is a volunteer
+ project to have regular citizens help with their compute power to address
+ large scientific challenges. To contribute, please see the home pages
+ of the BOINC project for details and follow the links to the respecitve
+ page of the scientific project.
+ .
+ This package provides an executable for the Binary Pulsar Search
+ subproject of the Einstein@Home project. Regular users would
+ auto-download that executable via the BOINC-Client application or
+ the BOINC-Manager. This package provides the equivalent binary but
+ compiled on the Debian build demons. As such it is available to many
+ more platforms than what could possibly be provided by the scientists
+ themselves. Also, recompiling the package is likely to yield an
+ executable well-optimized for the local machine that outperformes
+ the official executable.
+ .
+ Quite some also run the Debian-provided packages for security concerns.
+ They already decided to trust the Debian community and appreciated
+ that executable to ship with an inspectable source tree.

@@ -1,0 +1,19 @@
+boinc-app-eah-brp for Debian
+----------------------------
+
+<this file describes information about the source package, see Debian policy
+manual section 4.14. You WILL either need to modify or delete this file>
+
+The .zip file provided by upstream redistributes binaries for CUDA and
+OpenCL which were removed from this source tree.
+
+A few changes were required to allow the compilation to succeed:
+
+ Makefile.patch:
+
+ 
+
+
+
+ -- Steffen Moeller <moeller@debian.org>  Wed, 26 Apr 2017 23:44:15 +0200
+

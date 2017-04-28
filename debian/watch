@@ -1,0 +1,30 @@
+version=4
+#opts="pgpsigurlmangle=s%$%.sig%"
+
+# HTTP site (basic)
+#http://example.com/downloads.html \
+#  files/boinc-app-eah-brp-([\d\.]+)\.tar\.gz debian uupdate
+
+# Uncommment to examine a FTP server
+#ftp://ftp.example.com/pub/boinc-app-eah-brp-(.*)\.tar\.gz debian uupdate
+
+# SourceForge hosted projects
+# http://sf.net/boinc-app-eah-brp/ boinc-app-eah-brp-(.*)\.tar\.gz debian uupdate
+
+# GitHub hosted projects
+#opts="filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%<project>-$1.tar.gz%" \
+#   https://github.com/<user>/boinc-app-eah-brp/tags \
+#   (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate
+
+# PyPI
+# https://pypi.debian.net/boinc-app-eah-brp/boinc-app-eah-brp-(.+)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))
+
+# Direct Git
+# opts="mode=git" http://git.example.com/boinc-app-eah-brp.git \
+#   refs/tags/v([\d\.]+) debian uupdate
+
+
+# Uncomment to find new files on GooglePages
+# http://example.googlepages.com/foo.html boinc-app-eah-brp-(.*)\.tar\.gz
+
+https://einstein.phys.uwm.edu/download/brp-src-release.zip

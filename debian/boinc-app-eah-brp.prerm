@@ -1,0 +1,44 @@
+#!/bin/sh
+# prerm script for boinc-app-eah-brp
+
+set -e
+
+BOINC_DIR=/var/lib/boinc-client
+PROJECT=eah_brp
+
+init_boinc_client()
+{
+    if which invoke-rc.d >/dev/null 2>&1; then
+        invoke-rc.d boinc-client $1
+    else
+        /etc/init.d/boinc-client $1
+    fi
+}
+
+case "$1" in
+    remove)
+        # Stop the core client and wait one second to give it the
+        # chance to shut down gracefully before removing the S@h
+        # application. Start the client then again.
+        init_boinc_client stop
+        sleep 1
+        update-boinc-applinks --remove --project=$PROJECT --data-dir=$BOINC_DIR
+        init_boinc_client start
+    ;;
+    
+    upgrade)
+        update-boinc-applinks --remove --project=$PROJECT --data-dir=$BOINC_DIR
+    ;;
+
+    failed-upgrade|deconfigure)
+    ;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

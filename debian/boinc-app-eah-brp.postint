@@ -1,0 +1,40 @@
+#!/bin/sh
+# postinst script for boinc-app-seti
+
+set -e
+
+BOINC_DIR=/var/lib/boinc-client
+PROJECT=eah_brp
+
+init_boinc_client()
+{
+    if which invoke-rc.d >/dev/null 2>&1; then
+        invoke-rc.d boinc-client $1
+    else
+        /etc/init.d/boinc-client $1
+    fi
+}
+
+case "$1" in
+    configure)
+        update-boinc-applinks --create --project=$PROJECT --data-dir=$BOINC_DIR
+        chown -R boinc:boinc $BOINC_DIR/projects 2>/dev/null || true
+
+        # Restart the BOINC core client after update-boinc-applinks has
+        # created the symlinks for the anonymous application(s) and the
+        # app_info.xml file.
+        init_boinc_client restart
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
