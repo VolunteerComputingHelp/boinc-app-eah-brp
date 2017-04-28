@@ -1,0 +1,43 @@
+Description: A README to show to github users
+ When opening the github page there should be a decent summary
+ of what this project is about. This patch only serves as a
+ temporary storage for this writeup.
+ .
+ boinc-app-eah-brp (0.20170426+dfsg-1) unstable; urgency=medium
+ .
+   * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+Author: Steffen Moeller <moeller@debian.org>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2017-04-28
+
+--- /dev/null
++++ boinc-app-eah-brp-0.20170426+dfsg/README.md
+@@ -0,0 +1,17 @@
++# boinc-app-eah-brp
++BOINC Einstein@Home Binary Radio Pulsar search adapted for Debian Linux
++
++BOINC stands for the Berkeley Open Infrastructure for Network Computing and
++is the default infrastructure for volunteer computing. Such projects invite
++the public to contribute their compute facilities (desktops, laptop, 
++and increasingly IoT devices) to help tackling computational challenges.
++
++BRP stands for Binary Radio Pulsars. The LIGO collaboration has huge data
++collected that indicates their location and the Einstein@Home community
++helps with identifying those whereabouts. This project is well-funded and
++well-staffed and there would not be any reason to come up with any project
++like this if this was not a the immediate urge felt to invite additional
++platforms to join that search. And with the huge variety of these platforms,
++especially for ARM, upstream would diversify too much. This Debian package
++shall help the ambitious helping hands to compile the sources best optimised
++for their local hardware at hand.
