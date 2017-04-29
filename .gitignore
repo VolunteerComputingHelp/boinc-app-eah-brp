@@ -6,3 +6,9 @@ debian/.debhelper
 debian/*stamp
 debian/*.log
 debian/boinc-app-eah-brp
+
+debian/*.substvars
+debian/files
+
+# generated
+debian/extra/app_info.xml
