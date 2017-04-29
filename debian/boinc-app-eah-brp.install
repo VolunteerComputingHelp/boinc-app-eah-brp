@@ -1,4 +1,4 @@
 debian/extra/app_info.xml   usr/share/boinc-app-eah-brp
 debian/extra/eah_brp.cfg	usr/share/boinc-apps/info
-einsteinbinary  usr/lib/boinc-app-seti
+einsteinbinary  usr/lib/boinc-app-eah-brp
 debian/extra/einstein_bench/*	var/lib/boinc-app-eah-brp

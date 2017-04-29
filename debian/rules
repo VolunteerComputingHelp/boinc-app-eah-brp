@@ -24,7 +24,7 @@ DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 
-# PKG = boinc-app-seti
+# PKG = boinc-app-eah-brp
 
 export CPPFLAGS := $(shell dpkg-buildflags --get CPPFLAGS)
 export CFLAGS   := $(shell dpkg-buildflags --get CFLAGS)
@@ -34,7 +34,7 @@ export LDFLAGS  := $(shell dpkg-buildflags --get LDFLAGS)
 export EINSTEIN_RADIO_SRC := $(CURDIR)
 
 # Uncomment this to enable compilation with UltraSPARC specific compiler
-# flags. This will most probably increase setiathome's performance or if
+# flags. This will most probably increase the application's performance or if
 # your are unlucky will break it.
 #
 #CPUTYPE = $(shell head -1 /proc/cpuinfo | cut -f 2 -d ':' | cut -f 3 -d '\' )
@@ -136,4 +136,6 @@ override_dh_install:
 	  sed -e 's/VERSION/$(APP_INFO_VERSION)/' > debian/extra/app_info.xml
 	dh_install --list-missing
 
-
+override_dh_auto_clean:
+	make clean || echo "I: Make clean fails with no patches applied - please ignore"
+	dh_clean

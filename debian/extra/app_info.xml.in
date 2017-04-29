@@ -1,17 +1,18 @@
 <app_info>
     <app>
-        <name>eah_brp</name>
+        <name>einsteinbinary_BRP4</name>
     </app>
     <file_info>
-        <name>eah_brp</name>
+        <name>einsteinbinary</name>
         <executable/>
     </file_info>
     <app_version>
-        <app_name>eah_brp</app_name>
-        <version_num>0</version_num>
+        <app_name>einsteinbinary_BRP4</app_name>
+        <version_num>14</version_num>
         <file_ref>
-           <file_name>eah_brp</file_name>
+           <file_name>einsteinbinary</file_name>
            <main_program/>
         </file_ref>
     </app_version>
 </app_info>
+

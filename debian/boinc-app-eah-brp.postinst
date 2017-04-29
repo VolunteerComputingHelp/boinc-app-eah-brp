@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for boinc-app-seti
+# postinst script for boinc-app-eah-brp
 
 set -e
 
