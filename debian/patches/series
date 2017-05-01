@@ -4,3 +4,4 @@ Makefile.patch
 format-security-error.patch
 craft_own_sysdep_h.patch
 missing_includes.patch
+eliminate-sign-warning.patch

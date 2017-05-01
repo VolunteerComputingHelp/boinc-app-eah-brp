@@ -1,0 +1,13 @@
+Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
++++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -474,7 +474,7 @@ static int worker(void)
+     }
+ 
+     /* explicitly free command line resources (skip first entry) */
+-    for(int i = 1; i < forward_argv.size(); ++i) {
++    for(unsigned int i = 1; i < forward_argv.size(); ++i) {
+         if(forward_argv.at(i)) {
+             free(forward_argv.at(i));
+             forward_argv.at(i) = NULL;
