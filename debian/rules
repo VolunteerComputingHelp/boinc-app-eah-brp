@@ -27,7 +27,6 @@ DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 # PKG = boinc-app-eah-brp
 
 export CPPFLAGS := $(shell dpkg-buildflags --get CPPFLAGS)
-export CFLAGS   := $(shell dpkg-buildflags --get CFLAGS)
 export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS)
 export LDFLAGS  := $(shell dpkg-buildflags --get LDFLAGS)
 
@@ -107,17 +106,6 @@ endif
 # This is a shame, but there is yet no AltiVec for Linux PowerPC with SETI
 BRPEXTRAFLAGS= --disable-altivec
 
-# Link-time optimisation demands knowledge about all CFLAGS both at
-# compile time (as represented by CFLAGS and CXXFLAGS) but also at
-# at link time.
-ifeq (,$(findstring nolto,$(DEB_BUILD_OPTIONS)))
- $(info I: Activating LinkTimeOptimisation)
- BRPEXTRAFLAGS += --enable-lto
-endif
-
-# Although all source file are C++, some handwritten rules in
-# client/Makefile.am seem to use CFLAGS only.
-CFLAGS   += $(CFLAGS_APPEND)
 CXXFLAGS += $(CFLAGS_APPEND)
 
 

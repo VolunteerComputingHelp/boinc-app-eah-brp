@@ -1,3 +1,4 @@
+no-optimisation-in-makefile.patch
 Add_README_for_github.patch
 define_git_version.patch
 Makefile.patch

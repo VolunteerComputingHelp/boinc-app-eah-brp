@@ -1,0 +1,24 @@
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -62,8 +62,17 @@ release: clean $(TARGET)
+ 
+ # target specific options
+ debug: CXXFLAGS += -DLOGLEVEL=debug -pg -ggdb3 -rdynamic -O0 -Wall
+-profile: CXXFLAGS += -DNDEBUG -DLOGLEVEL=info -ggdb3 -rdynamic -O3 -Wall -fprofile-generate
+-release: CXXFLAGS += -DNDEBUG -DLOGLEVEL=info -ggdb3 -rdynamic -O3 -Wall -fprofile-use
++profile: CXXFLAGS += -DNDEBUG -DLOGLEVEL=info -ggdb3 -rdynamic -Wall -fprofile-generate
++release: CXXFLAGS += -DNDEBUG -DLOGLEVEL=info -ggdb3 -rdynamic -Wall -fprofile-use
++
++# Link-time optimisation demands knowledge about all CFLAGS both at
++# compile time (as represented by CFLAGS and CXXFLAGS) but also at
++# at link time.
++ifeq (,$(findstring nolto,$(DEB_BUILD_OPTIONS)))
++   CXXFLAGS += -flto
++   LDFLAGS += $(CXXFLAGS)
++endif
++
+ 
+ # file based targets
+ profile:
