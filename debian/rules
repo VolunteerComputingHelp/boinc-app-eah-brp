@@ -81,6 +81,9 @@ LOCALOPTIMISATION="yes"
 endif
 endif
 
+CFLAGS_APPEND += -O3
+CFLAGS_APPEND += -fomit-frame-pointer
+
 # If the package is not meant to be distributed to main servers, then maximise optimisation
 ifneq (,$(LOCALOPTIMISATION))
   $(info I: Setting native flags for optimisation)
@@ -91,20 +94,11 @@ ifeq ($(DEB_BUILD_GNU_CPU),i686)
   # Demand i686 class system
   CFLAGS_APPEND += -march=i686 -mcpu=i686
 endif
-endif
-
 ifeq ($(DEB_BUILD_GNU_CPU),x86_64)
-  BRPEXTRAFLAGS += --enable-sse3
-#  BRPEXTRAFLAGS += --disable-avx
-#  BRPEXTRAFLAGS += --enable-sse2 --enable-sse --enable-mmx
+  #CFLAGS_APPEND += -mavx -msse3 
+endif
 endif
 
-ifeq ($(DEB_BUILD_GNU_CPU),i686)
-  BRPEXTRAFLAGS += --enable-sse2 --enable-sse --enable-mmx
-endif
-
-# This is a shame, but there is yet no AltiVec for Linux PowerPC with SETI
-BRPEXTRAFLAGS= --disable-altivec
 
 CXXFLAGS += $(CFLAGS_APPEND)
 

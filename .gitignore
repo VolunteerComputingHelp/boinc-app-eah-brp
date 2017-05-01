@@ -1,6 +1,7 @@
 .pc
 *.o
 *~
+*.swp
 
 # expected names of the generated executable
 einsteinbinary
