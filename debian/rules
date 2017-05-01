@@ -139,4 +139,4 @@ override_dh_install:
 
 override_dh_auto_clean:
 	make clean || echo "I: Make clean fails with no patches applied - please ignore"
-	dh_clean
+	dh_clean stderr.old stderr.txt
