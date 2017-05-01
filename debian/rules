@@ -32,6 +32,7 @@ export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS)
 export LDFLAGS  := $(shell dpkg-buildflags --get LDFLAGS)
 
 export EINSTEIN_RADIO_SRC := $(CURDIR)
+export EINSTEINBINARY_TARGET = einsteinbinary_BRP4
 
 # Uncomment this to enable compilation with UltraSPARC specific compiler
 # flags. This will most probably increase the application's performance or if
