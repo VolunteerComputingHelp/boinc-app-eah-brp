@@ -3,14 +3,14 @@
         <name>einsteinbinary_BRP4</name>
     </app>
     <file_info>
-        <name>einsteinbinary</name>
+        <name>einsteinbinary_BRP4</name>
         <executable/>
     </file_info>
     <app_version>
         <app_name>einsteinbinary_BRP4</app_name>
         <version_num>14</version_num>
         <file_ref>
-           <file_name>einsteinbinary</file_name>
+           <file_name>einsteinbinary_BRP4</file_name>
            <main_program/>
         </file_ref>
     </app_version>
