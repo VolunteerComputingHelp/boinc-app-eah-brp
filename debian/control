@@ -2,11 +2,11 @@ Source: boinc-app-eah-brp
 Section: science
 Priority: optional
 Maintainer: Steffen Moeller <moeller@debian.org>
-Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev
+Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev|libgsl0-dev, binutils-dev
 Standards-Version: 3.9.8
 Homepage: https://einsteinathome.org/application-source-code-and-license
-#Vcs-Git: https://anonscm.debian.org/collab-maint/boinc-app-eah-brp.git
-#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/boinc-app-eah-brp.git
+Vcs-Git: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
+Vcs-Browser: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
 
 Package: boinc-app-eah-brp
 Architecture: any
