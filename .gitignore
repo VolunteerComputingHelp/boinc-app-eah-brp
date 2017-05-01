@@ -1,6 +1,9 @@
 .pc
 *.o
+
+# expected names of the generated executable
 einsteinbinary
+einsteinbinary_BRP4
 
 debian/.debhelper
 debian/*stamp
