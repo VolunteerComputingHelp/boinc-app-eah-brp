@@ -1,5 +1,6 @@
 .pc
 *.o
+*~
 
 # expected names of the generated executable
 einsteinbinary
@@ -15,3 +16,4 @@ debian/files
 
 # generated
 debian/extra/app_info.xml
+
