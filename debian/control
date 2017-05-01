@@ -3,7 +3,7 @@ Section: science
 Priority: optional
 Maintainer: Debian BOINC Maintainers <pkg-boinc-devel@lists.alioth.debian.org>
 Uploaders: Steffen Moeller <moeller@debian.org>, Christian Dreihsig <christian.dreihsig@t-online.de>
-Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev|libgsl0-dev, binutils-dev
+Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev|libgsl0-dev, binutils-dev,  libfftw3-dev
 Standards-Version: 3.9.8
 Homepage: https://einsteinathome.org/application-source-code-and-license
 Vcs-Git: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
