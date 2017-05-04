@@ -1,0 +1,15 @@
+Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
++++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -132,8 +132,10 @@ static void sighandler(int sig)
+     static void *stackframes[64];
+     static size_t nostackframes;
+     static char **backtracesymbols = NULL;
++#ifdef __i386__
+     ucontext_t *uc = (ucontext_t *)secret;
+ #endif
++#endif
+ 
+     /* lets start by ignoring ANY further occurrences of this signal
+          (hopefully just in THIS thread, if truly implementing POSIX threads */

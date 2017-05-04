@@ -1,0 +1,217 @@
+Index: boinc-app-eah-brp/erp_boinc_wrapper.h
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.h
++++ boinc-app-eah-brp/erp_boinc_wrapper.h
+@@ -38,7 +38,7 @@
+ extern "C" {
+ #endif
+ 
+-    extern int MAIN(int,char**);
++    extern int MAIN(unsigned int,char**);
+     extern gzFile boinc_gzopen(const char* path, const char* mode);
+ 
+ #ifdef  __cplusplus
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -114,7 +114,7 @@ int set_checkpoint(const User_Variables
+ /*+++++++++++++++++++++++++++++
+ +    start main program       +
+ +++++++++++++++++++++++++++++*/
+-int MAIN (int argc, char *argv[])
++int MAIN (unsigned int argc, char *argv[])
+ {
+   // structs
+   User_Variables uvar;                      // parameters specified in the command line
+@@ -335,7 +335,8 @@ int MAIN (int argc, char *argv[])
+ 	      return(RADPUL_EFILE);
+ 	    }
+ 
+-	  if(snprintf(uvar.outputfile_tmp, sizeof(uvar.outputfile_tmp), "%s.tmp", argv[i+1]) >= sizeof(uvar.outputfile_tmp))
++          int sprintfret;
++	  if((sprintfret=snprintf(uvar.outputfile_tmp, sizeof(uvar.outputfile_tmp), "%s.tmp", argv[i+1])) < 0 || (((unsigned int) sprintfret) >= sizeof(uvar.outputfile_tmp)))
+ 	    {
+ 	      logMessage(error, true, "Couldn't prepare temporary output file name: %s\n", argv[i+1]);
+ 	      return(RADPUL_EFILE);
+@@ -352,7 +353,8 @@ int MAIN (int argc, char *argv[])
+ 	      return(RADPUL_EFILE);
+ 	    }
+ 
+-	  if(snprintf(uvar.checkpointfile_tmp, sizeof(uvar.checkpointfile_tmp), "%s.tmp", argv[i+1]) >= sizeof(uvar.checkpointfile_tmp))
++          int sprintfret;
++	  if((sprintfret=snprintf(uvar.checkpointfile_tmp, sizeof(uvar.checkpointfile_tmp), "%s.tmp", argv[i+1])) < 0 || (((unsigned int) sprintfret) >= sizeof(uvar.checkpointfile_tmp)))
+ 	    {
+ 	      logMessage(error, true, "Couldn't prepare temporary checkpoint file name: %s\n", argv[i+1]);
+ 	      return(RADPUL_EFILE);
+@@ -551,7 +553,8 @@ int MAIN (int argc, char *argv[])
+       logMessage(info, true, "Checkpoint file unavailable: %s (%s).\n", uvar.checkpointfile, strerror(errno));
+       logMessage(info, false, "Starting from scratch...\n");
+       template_counter = 0;
+-      if(snprintf(cp_head.originalfile, sizeof(cp_head.originalfile), "%s", uvar.inputfile) >= sizeof(cp_head.originalfile))
++      int sprintfret;
++      if((sprintfret = snprintf(cp_head.originalfile, sizeof(cp_head.originalfile), "%s", uvar.inputfile)) < 0 || (((unsigned int)sprintfret) >= sizeof(cp_head.originalfile)))
+ 	{
+     	  logMessage(error, true, "Couldn't write input file %s name to checkpoint header.\n", uvar.inputfile);
+ 	  return(RADPUL_EFILE);
+@@ -615,14 +618,14 @@ int MAIN (int argc, char *argv[])
+ 	  if(uvar.debug)
+ 	    {
+ 	      logMessage(debug, true, "Candidates found so far:\n");
+-	      for(i = 0; i < N_CAND; i++)
++	      for(unsigned int i = 0; i < N_CAND; i++)
+ 		{
+ 		  logMessage(debug, false, "%d %6.12f %6.12f %6.12f %6.12f %d\n", candidates_all[i].f0, candidates_all[i].power, candidates_all[i].P_b, candidates_all[i].tau, candidates_all[i].Psi, candidates_all[i].n_harm);
+ 		}
+ 	    }
+ 
+ 	  // go to the next unused template in the template bank if checkpoint file exists
+-	  for( i = 0; i < cp_head.n_template; i++)
++	  for( unsigned int i = 0; i < cp_head.n_template; i++)
+ 	    {
+ 	      float P_tmp, tau_tmp, psi_tmp;
+ 	      char line[FN_LENGTH];
+@@ -642,7 +645,7 @@ int MAIN (int argc, char *argv[])
+ 		}
+ 	      else if(sscanf(line, c_template_scan_format, &P_tmp, &tau_tmp, &psi_tmp) != 3)
+ 		{
+-		  logMessage(error, true, "Couldn't read complete line %d in %s\n", i, uvar.templatebank);
++		  logMessage(error, true, "Couldn't read complete line %u in %s\n", i, uvar.templatebank);
+ 		  return(RADPUL_EIO);
+ 		}
+ 	    }
+@@ -828,7 +831,7 @@ int MAIN (int argc, char *argv[])
+     }
+ 
+   // convert compressed single-byte data back into 4-byte floats
+-  for(i = 0; i < n_unpadded_format; i ++)
++  for(unsigned int i = 0; i < n_unpadded_format; i ++)
+     {
+       if(t_series_4bit) {
+           // read in the two samples packed in one char and convert into floats
+@@ -863,7 +866,7 @@ int MAIN (int argc, char *argv[])
+       float *powerspectrum;
+       float *running_median;
+       int32_t seed = 0;
+-      int white_size;
++      unsigned int white_size;
+       int line_counter = 0;
+       unsigned int fft_size;
+       unsigned int window_2 = (int)(0.5*uvar.window + 0.5);
+@@ -895,7 +898,7 @@ int MAIN (int argc, char *argv[])
+       // sharing both for inplace transform
+       // BUT we have to take care explicitly about the zero-padding, as fft wasn't allocated with calloc.
+       time_series = (float *) fft;
+-      for(i=n_unpadded; i < data_head.nsamples; i++) {
++      for(unsigned int i=n_unpadded; i < data_head.nsamples; i++) {
+         time_series[i]=0.0f;
+       }
+ #else      
+@@ -910,7 +913,7 @@ int MAIN (int argc, char *argv[])
+ 
+ 
+       // create zero-padded time series
+-      for(i = 0; i < n_unpadded; i++)
++      for(unsigned int i = 0; i < n_unpadded; i++)
+ 	time_series[i] = t_series_dd.host_ptr[i];
+ 
+       // get seed for random number generator from the dedispersed time series itself
+@@ -935,10 +938,11 @@ int MAIN (int argc, char *argv[])
+ 	}
+ 
+       // get the corresponding periodogramm, ignore DC element
+-      for(i = 1; i < fft_size; i++)
++      for(unsigned int i = 1; i < fft_size; i++)
+ 	powerspectrum[i] = gsl_pow_2(fft[i][0]) + gsl_pow_2(fft[i][1]);
+ 
+       // size of the running median array
++      //assert(fft_size >= uvar.window + 1); // was already checked above
+       white_size = fft_size - uvar.window + 1;
+ 
+       // allocate memory for the running median array
+@@ -961,7 +965,7 @@ int MAIN (int argc, char *argv[])
+       // ATTENTION: don't make window size too small, will bias
+       //            estimation of median
+       // [0 ................ window_2 ................ white_size - 1 + window_2 ................ fft_size - 1]
+-      for(i = 0; i < white_size; i++)
++      for(unsigned int i = 0; i < white_size; i++)
+ 	{
+ 	  float factor = sqrt(M_LN2/running_median[i]);
+ 	  fft[i + window_2][0] *= factor;
+@@ -1035,7 +1039,7 @@ int MAIN (int argc, char *argv[])
+       logMessage(debug, true, "Zapped known radio frequency interferences.\n");
+ 
+       // set the amplitudes not covered by running median to zero
+-      for(i = 0; i < window_2; i++)
++      for(unsigned int i = 0; i < window_2; i++)
+ 	{
+ 	  fft[i][0] = 0.0;
+ 	  fft[i][1] = 0.0;
+@@ -1065,7 +1069,7 @@ int MAIN (int argc, char *argv[])
+       // renormalize time series and copy only the values
+       // that were initially nonzero
+       norm_factor = 1.0/sqrt((float)data_head.nsamples);
+-      for(i = 0; i < n_unpadded; i++)
++      for(unsigned int i = 0; i < n_unpadded; i++)
+ 	t_series_dd.host_ptr[i] = norm_factor*time_series[i];
+ 
+       
+@@ -1320,11 +1324,11 @@ thrA[4] = 0.0;
+ 	  // corresponding thresholds on power
+ 	  float thr  = thrA[harm_idx];
+ 
+-	  i=window_2;
++	  unsigned int i=window_2;
+ 	  while(i < fundamental_idx_hi)
+ 	    {
+-	      int page_idx;
+-              int i_next_page;
++	      unsigned int page_idx;
++              unsigned int i_next_page;
+ 
+ 	      // find next "dirty" page in sumspec beginning with page that covers bin i
+ 
+@@ -1499,7 +1503,7 @@ thrA[4] = 0.0;
+   if(result != 0) return(result);
+ 
+   // compute the -log10() of the inverse false alarm rate for all candidates
+-  for(i = 0; i < N_CAND; i++)
++  for(unsigned int i = 0; i < N_CAND; i++)
+     {
+       // 2*power is distributed in a chi-squared of 2n d.o.f. in sum over n harmonics
+       // sigma in chi-squared of 2n d.o.f. is sqrt(4n) => sigma_n = sqrt(n)
+@@ -1628,11 +1632,9 @@ thrA[4] = 0.0;
+ #endif
+ 
+   // write all candidates with power > 0.0 to file
+-  int counter = 0;
++  unsigned int counter = 0;
+   while(counter < N_CAND_5 && candidates_all[0].fA > 0.0)
+     {
+-      unsigned int j;
+-
+       // observation time in seconds and frequency resolution
+       double t_obs = data_head.nsamples*data_head.tsample*MICROSEC;
+       double res_factor = 1.0/t_obs;
+@@ -1652,7 +1654,7 @@ thrA[4] = 0.0;
+       // if at same frequency so that resorting puts them at the end of the array.
+       // This step ensures maximization over N_h. If there's a less significant candidate
+       // at the same frequency bin (and with different N_h) it's dismissed in this step.
+-      for(j = 0; j < N_CAND; j++)
++      for(unsigned int j = 0; j < N_CAND; j++)
+ 	{
+ 	  if(candidates_all[j].f0 == candidates_all[0].f0)
+ 	    candidates_all[j].fA = -10.0;
+Index: boinc-app-eah-brp/demod_binary.h
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.h
++++ boinc-app-eah-brp/demod_binary.h
+@@ -76,7 +76,7 @@
+ extern "C" {
+ #endif
+ 
+-extern int MAIN (int argc, char *argv[]);
++extern int MAIN (unsigned int argc, char *argv[]);
+ 
+ #ifdef __cplusplus
+ }

@@ -1,0 +1,32 @@
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -95,7 +95,12 @@ demod_binary.o: $(DEPS) $(EINSTEIN_RADIO
+ 	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/demod_binary.c
+ 
+ demod_binary_resamp_cpu.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/demod_binary_resamp_cpu.c $(EINSTEIN_RADIO_SRC)/demod_binary_resamp_cpu.h
++ifeq ($(DEB_BUILD_GNU_CPU),arm64)
++	$(info I: Do not allow fused multiply subtract)
++	$(CXX) -g $(CXXFLAGS) -ffp-contract=off -c $(EINSTEIN_RADIO_SRC)/demod_binary_resamp_cpu.c
++else
+ 	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/demod_binary_resamp_cpu.c
++endif
+ 
+ hs_common.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/hs_common.c $(EINSTEIN_RADIO_SRC)/hs_common.h
+ 	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/hs_common.c
+@@ -118,8 +123,14 @@ erp_getopt.o: $(DEPS) $(EINSTEIN_RADIO_S
+ erp_getopt1.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_getopt1.c $(EINSTEIN_RADIO_SRC)/erp_getopt.h $(EINSTEIN_RADIO_SRC)/erp_getopt_int.h
+ 	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/erp_getopt1.c
+ 
++
+ erp_utilities.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_utilities.cpp $(EINSTEIN_RADIO_SRC)/erp_utilities.h
++ifeq ($(DEB_BUILD_GNU_CPU),arm64)
++	$(info I: Do not allow fused multiply subtract)
++	$(CXX) -g $(CXXFLAGS) -ffp-contract=off -c $(EINSTEIN_RADIO_SRC)/erp_utilities.cpp
++else
+ 	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/erp_utilities.cpp
++endif
+ 
+ erp_execinfo_plus.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_execinfo_plus.c $(EINSTEIN_RADIO_SRC)/erp_execinfo_plus.h
+ 	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/erp_execinfo_plus.c

@@ -1,0 +1,37 @@
+Index: boinc-app-eah-brp/rngmed.c
+===================================================================
+--- boinc-app-eah-brp.orig/rngmed.c
++++ boinc-app-eah-brp/rngmed.c
+@@ -74,7 +74,6 @@ void rngmed(const float *input, const un
+   unsigned int  ncheckpts,stepchkpts; /* checkpoints: number and distance between */
+   unsigned int  oldestnode;           /* index of "oldest" node */
+   unsigned int  i;                    /* loop counter (up to input length) */
+-  int j;                              /* loop counter (might get negative) */
+   unsigned int  nmedian;              /* current median, outer loop counter */
+   unsigned int  midpoint;             /* index of middle node in sorting order */
+   unsigned int  mdnnearest;           /* checkpoint "nearest" to the median */
+@@ -147,13 +146,13 @@ void rngmed(const float *input, const un
+ 
+    /* setup checkpoints */
+ #ifndef NEWCHECKPOINT
+-   for(i = 0; i < ncheckpts; i++)
++   for(unsigned int i = 0; i < ncheckpts; i++)
+      checkpts[i] = qsnodes[i*stepchkpts].index;
+ #else
+    /* j is the current checkpoint
+       i is the stepping
+       they are out of sync after a median checkpoint has been added */
+-   for(i = 0, j = 0; j < ncheckpts; j++, i++)
++   for(unsigned int i = 0, j = 0; j < ncheckpts; j++, i++)
+      {
+        if (j == mdnnearest) {
+ 	 checkpts[j] = qsnodes[midpoint].index;
+@@ -293,7 +292,7 @@ void rngmed(const float *input, const un
+ 	   if (oldvalue < newvalue)
+ 	     {
+ 	       /* we shift towards larger values */
+-	       for(j = rightcheckpt - 1; (j > 0) && (nodes[checkpts[j]].value >= oldvalue); j--)
++	       for(int j = rightcheckpt - 1; (j > 0) && (nodes[checkpts[j]].value >= oldvalue); j--)
+ 		 if (nodes[checkpts[j]].value > oldvalue)
+ 		   checkpts[j] = nodes[checkpts[j]].greater;
+ 		 else if (checkpts[j] == oldestnode)

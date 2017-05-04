@@ -6,3 +6,10 @@ format-security-error.patch
 craft_own_sysdep_h.patch
 missing_includes.patch
 eliminate-sign-warning.patch
+avoid_warnings_0.patch
+avoid_warnings_1.patch
+avoid_warnings_2.patch
+avoid_warnings_3.patch
+avoid_warnings_4.patch
+avoid_warnings_5.patch
+no_ffp_contract.patch

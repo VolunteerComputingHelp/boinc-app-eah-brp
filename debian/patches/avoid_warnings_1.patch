@@ -1,0 +1,36 @@
+Index: boinc-app-eah-brp/hs_common.c
+===================================================================
+--- boinc-app-eah-brp.orig/hs_common.c
++++ boinc-app-eah-brp/hs_common.c
+@@ -54,14 +54,14 @@ int harmonic_summing(float ** sumspec,
+ 
+       unsigned int i,l;
+       unsigned int idx16[16];
+-      float sum1;
+-      int j1=-1;
+-      float sum2;
+-      int j2=-1;
+-      float sum3;
+-      int j3=-1;
+-      float sum4;
+-      int j4=-1;
++      float sum1=0.0f;
++      unsigned int j1;
++      float sum2=0.0f;
++      unsigned int j2;
++      float sum3=0.0f;
++      unsigned int j3;
++      float sum4=0.0f;
++      unsigned int j4;
+ 
+       for(l=0;l < 16 ; l++) {
+ 	idx16[l] = window_2 * l + 8;
+@@ -72,7 +72,7 @@ int harmonic_summing(float ** sumspec,
+ 	{
+ 	  float sum;
+           float power;
+-	  int j;
++	  unsigned int j;
+ 
+ 	  // first harmonic
+ 	  sum = powerspectrum[i];
