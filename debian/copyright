@@ -10,7 +10,8 @@ Copyright: 2006-2010   Oliver Bock <oliver.bock@aei.mpg.de>
            2008        Benjamin Knispel <benjamin.knispel@aei.mpg.de>
 License: GPL-2
 
-Files: exchndl32.c, exchndl64.c
+Files: exchndl32.c
+       exchndl64.c
 Copyright:   2004 Jose Fonseca <j_r_fonseca@yahoo.co.uk>
              2008 Oliver Bock <oliver.bock[AT]aei.mpg.de>
              1997 Matt Pietrek's MSJEXHND.CPP in Microsoft Systems Journal
@@ -21,7 +22,8 @@ Copyright: B. Machenschalk
 License: GPL-2
 
 
-Files: erp_getopt.[ch] , erp_getopt_int.h
+Files: erp_getopt.[ch]
+       erp_getopt_int.h
 Copyright: 1989-1994,1996-1999,2001,2003,2004  Free Software Foundation, Inc.
 License: LGPL-2.1+
 
