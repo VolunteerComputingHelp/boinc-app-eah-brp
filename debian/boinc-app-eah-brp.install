@@ -2,3 +2,4 @@ debian/extra/app_info.xml   usr/share/boinc-app-eah-brp
 debian/extra/eah_brp.cfg	usr/share/boinc-apps/info
 einsteinbinary_BRP4  usr/lib/boinc-app-eah-brp
 debian/extra/einstein_bench/*	var/lib/boinc-app-eah-brp
+debian/extra/create_wisdomf_eah_brp.sh	usr/share/boinc-app-eah-brp
