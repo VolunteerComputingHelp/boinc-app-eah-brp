@@ -1,5 +1,12 @@
+boinc-app-eah-brp (0.20170426+dfsg-2) unstable; urgency=medium
+
+  * Addressed compiler warnings.
+  * Initial release (Closes: #861600).
+
+ -- Steffen Moeller <moeller@debian.org>  Thu, 04 May 2017 09:28:07 +0200
+
 boinc-app-eah-brp (0.20170426+dfsg-1) unstable; urgency=medium
 
-  * Initial release (Closes: #861600).
+  * First internal distribution.
 
  -- Steffen Moeller <moeller@debian.org>  Wed, 26 Apr 2017 23:44:15 +0200

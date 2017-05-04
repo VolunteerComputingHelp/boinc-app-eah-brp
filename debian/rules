@@ -15,7 +15,7 @@
 #export CXX = clang
 
 # Set default flags with dpkg-buildflags
-export DEB_BUILD_MAINT_OPTIONS = hardening=+all # FIXME: Hardening needs to be reactivated
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
 
@@ -81,16 +81,17 @@ LOCALOPTIMISATION="yes"
 endif
 endif
 
-CFLAGS_APPEND += -O3
-CFLAGS_APPEND += -fomit-frame-pointer
+#CFLAGS_APPEND += -O3
+#CFLAGS_APPEND += -fomit-frame-pointer
 
 # If the package is not meant to be distributed to main servers, then maximise optimisation
 ifneq (,$(LOCALOPTIMISATION))
   $(info I: Setting native flags for optimisation)
   CFLAGS_APPEND += -march=native -mtune=native
 else
-  $(info W: Would have set native flags for optimisation but supported only for linux)
+  $(info W: _Not_ setting native flags for optimisation)
 ifeq ($(DEB_BUILD_GNU_CPU),i686)
+  $(info W: Not supporting earlier systems than i686)
   # Demand i686 class system
   CFLAGS_APPEND += -march=i686 -mcpu=i686
 endif
@@ -99,8 +100,8 @@ ifeq ($(DEB_BUILD_GNU_CPU),x86_64)
 endif
 endif
 
-
 CXXFLAGS += $(CFLAGS_APPEND)
+$(info CXXFLAGS $(CXXFLAGS))
 
 
 # Get upstream version from debian version.
@@ -121,4 +122,5 @@ override_dh_install:
 
 override_dh_auto_clean:
 	make clean || echo "I: Make clean fails with no patches applied - please ignore"
-	dh_clean stderr.old stderr.txt
+	dh_clean stderr.old stderr.txt boinc_EinsteinRadio_0 boinc_EinsteinRadio_0 boinc_finish_called
+	dh_clean einsteinbinary einsteinbinary_BRP4
