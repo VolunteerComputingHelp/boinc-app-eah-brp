@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: BRP
 Source: https://einstein.phys.uwm.edu/download/brp-src-release.zip
-Files-Excluded: src/*/redist
+Files-Excluded: src/*/redist, cuda/app/cuPrintf*
 
 Files: *
 Copyright: 2006-2010   Oliver Bock <oliver.bock@aei.mpg.de>
