@@ -1,15 +1,44 @@
 boinc-app-eah-brp for Debian
 ----------------------------
 
-<this file describes information about the source package, see Debian policy
-manual section 4.14. You WILL either need to modify or delete this file>
-
 The .zip file provided by upstream redistributes binaries for CUDA and
-OpenCL which were removed from this source tree.
+OpenCL which were removed from this source tree. The CUDA example
+"cuPrintf" was also removed.
 
-A few changes were required to allow the compilation to succeed:
+A few changes were performed to allow the compilation to succeed or
+reduce the number of warnings during compilation:
 
- Makefile.patch:
+Add_README_for_github.patch
+	stores an idea for a README that should eventually be added
+	to the upstream source tree to help direct encounters with
+	this project in github without violating the Debian principles.
+
+avoid_warnings_0.patch
+avoid_warnings_1.patch
+avoid_warnings_2.patch
+avoid_warnings_3.patch
+avoid_warnings_4.patch
+avoid_warnings_5.patch
+eliminate-sign-warning.patch
+	Series of patches to eliminate warnings
+
+craft_own_sysdep_h.patch
+	The sysdep.h file is not redistributed with the source tree.
+
+define_git_version.patch
+	A file indicating the git version is not redistributed.
+
+format-security-error.patch
+	fixing Xprintf statements
+
+missing_includes.patch
+	some include files had to be added manually to adjust for
+	different locations e.g. for the BOINC include files.
+
+no_ffp_contract.patch
+no-optimisation-in-makefile.patch
+Makefile.patch
+	Whatever did not fit with debian/rules went there
 
  
 
