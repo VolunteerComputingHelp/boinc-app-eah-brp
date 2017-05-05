@@ -28,7 +28,7 @@ fi
 
 DESTFILE="$1"
 if [ -z "$1" ]; then
-	$DESTFILE="/tmp/wisdomf"
+	DESTFILE=/tmp/wisdomf
 fi
 
 
@@ -40,8 +40,8 @@ fi
 echo "I: Computing wisdom file for BRP4. This will take several hours if not days."
 echo
 
-fftwf-wisdom -v -o "$DESTFILE" rof12582912
+fftwf-wisdom -n -v -o "$DESTFILE" rof12582912
 
 echo "I: Wisdom file was computed successfully. Do"
-echo "   sudo mkdir /etc/fftw"
+echo "   sudo mkdir -p /etc/fftw"
 echo "   sudo '$DESTFILE' /etc/fftw/wisdomf"
