@@ -44,4 +44,4 @@ fftwf-wisdom -n -v -o "$DESTFILE" rof12582912
 
 echo "I: Wisdom file was computed successfully. Do"
 echo "   sudo mkdir -p /etc/fftw"
-echo "   sudo '$DESTFILE' /etc/fftw/wisdomf"
+echo "   sudo mv '$DESTFILE' /etc/fftw/wisdomf"
