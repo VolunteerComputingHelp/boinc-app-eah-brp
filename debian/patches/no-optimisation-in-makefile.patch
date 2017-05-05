@@ -14,10 +14,10 @@ Index: boinc-app-eah-brp/Makefile
 +# Link-time optimisation demands knowledge about all CFLAGS both at
 +# compile time (as represented by CFLAGS and CXXFLAGS) but also at
 +# at link time.
-+ifeq (,$(findstring nolto,$(DEB_BUILD_OPTIONS)))
-+   CXXFLAGS += -flto
-+   LDFLAGS += $(CXXFLAGS)
-+endif
++#ifeq (,$(findstring nolto,$(DEB_BUILD_OPTIONS)))
++#   CXXFLAGS += -flto
++#   LDFLAGS += $(CXXFLAGS)
++#endif
 +
  
  # file based targets
