@@ -6,7 +6,7 @@ Index: boinc-app-eah-brp/Makefile
  	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/demod_binary.c
  
  demod_binary_resamp_cpu.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/demod_binary_resamp_cpu.c $(EINSTEIN_RADIO_SRC)/demod_binary_resamp_cpu.h
-+ifeq ($(DEB_BUILD_GNU_CPU),arm64)
++ifeq ($(DEB_BUILD_GNU_CPU),aarch64)
 +	$(info I: Do not allow fused multiply subtract)
 +	$(CXX) -g $(CXXFLAGS) -ffp-contract=off -c $(EINSTEIN_RADIO_SRC)/demod_binary_resamp_cpu.c
 +else
@@ -21,7 +21,7 @@ Index: boinc-app-eah-brp/Makefile
  
 +
  erp_utilities.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_utilities.cpp $(EINSTEIN_RADIO_SRC)/erp_utilities.h
-+ifeq ($(DEB_BUILD_GNU_CPU),arm64)
++ifeq ($(DEB_BUILD_GNU_CPU),aarch64)
 +	$(info I: Do not allow fused multiply subtract)
 +	$(CXX) -g $(CXXFLAGS) -ffp-contract=off -c $(EINSTEIN_RADIO_SRC)/erp_utilities.cpp
 +else
