@@ -30,6 +30,11 @@ export CPPFLAGS := $(shell dpkg-buildflags --get CPPFLAGS)
 export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS)
 export LDFLAGS  := $(shell dpkg-buildflags --get LDFLAGS)
 
+$(info I: Initial settings of compiler flags)
+$(info CPPFLAGS: $(CPPFLAGS))
+$(info CXXFLAGS: $(CXXFLAGS))
+$(info LDFLAGS: $(LDFLAGS))
+
 export EINSTEIN_RADIO_SRC := $(CURDIR)
 export EINSTEINBINARY_TARGET = einsteinbinary_BRP4
 
@@ -54,6 +59,8 @@ export EINSTEINBINARY_TARGET = einsteinbinary_BRP4
 #  CXXFLAGS += -m64
 #  DEB_CONFIGURE_EXTRA_FLAGS += --enable-bitness=64
 #endif
+
+CFLAGS_APPEND += $(CPPFLAGS)
 
 
 # Append this to CFLAGS and CXXFLAGS.
@@ -100,8 +107,9 @@ ifeq ($(DEB_BUILD_GNU_CPU),x86_64)
 endif
 endif
 
+
 CXXFLAGS += $(CFLAGS_APPEND)
-$(info CXXFLAGS $(CXXFLAGS))
+$(info I: Extended CXXFLAGS: $(CXXFLAGS))
 
 
 # Get upstream version from debian version.

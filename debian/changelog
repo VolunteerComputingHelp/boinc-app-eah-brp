@@ -1,3 +1,9 @@
+boinc-app-eah-brp (0.20170426+dfsg-3) UNRELEASED; urgency=medium
+
+  * Integrate CPPFLAGS in build - avoids build log warning
+
+ -- Steffen Moeller <moeller@debian.org>  Thu, 11 May 2017 12:51:09 +0200
+
 boinc-app-eah-brp (0.20170426+dfsg-2) unstable; urgency=medium
 
   * Addressed compiler warnings.
