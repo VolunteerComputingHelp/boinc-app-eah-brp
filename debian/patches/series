@@ -14,5 +14,6 @@ avoid_warnings_4.patch
 no_ffp_contract.patch
 prepare_simd_resamp_1.patch
 prepare_simd_resamp_2.patch
+prepare_simd_resamp_3.patch
 add_simd_resamp_files_1.patch
 add_simd_resamp_files_2.patch

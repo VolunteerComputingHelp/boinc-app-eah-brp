@@ -1,0 +1,11 @@
+--- boinc-app-eah-brp.orig	/demod_binary.c	2017-05-14 15:00:21.387331714 +0000
++++ boinc-app-eah-brp/demod_binary.c	2017-05-14 15:01:13.718397923 +0000
+@@ -1110,7 +1110,7 @@
+     }
+ 
+   // initialize sin/cos lookup tables (required during resampling)
+-  sincosLUTInitialize(&sinLUTsamples, &cosLUTsamples);
++  //sincosLUTInitialize(&sinLUTsamples, &cosLUTsamples);
+ 
+   // prepare resampling
+   RESAMP_PARAMS params;
