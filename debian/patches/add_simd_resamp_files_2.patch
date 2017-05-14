@@ -1,0 +1,70 @@
+--- /dev/null	2017-05-09 15:36:50.836517489 +0000
++++ boinc-app-eah-brp/run_resampling_SCALAR.c	2017-05-14 09:29:12.514154173 +0000
+@@ -0,0 +1,67 @@
++int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS * const params) {
++   float * input  = input_dip.host_ptr;
++   float * output = output_dip.host_ptr;
++
++   unsigned int n_steps;           // number of timesteps to take when resampling
++   float mean = 0.0f;              // mean of the time series
++
++   for (unsigned int i=0; i<params->nsamples_unpadded; i++) {
++      float d, d2;
++      float x, xt, xPi;
++      float ts, tc, sinValue;
++      int i0;
++
++      //determine x for Sin-lookup
++      x = ((float)(i)) * params->dt * params->Omega + params->Psi0;
++
++      //faster replacement for modff
++      xPi = (ERP_TWO_PI_INV * x);
++      xt = xPi - (int)(xPi);
++      //xt = (x < 0.0f) ? (x + 1.0f) : x;
++
++      //determine LUT index
++      i0 = (int) (xt * ERP_SINCOS_LUT_RES_F + 0.5f);
++      d = d2 = ERP_TWO_PI * (xt - ERP_SINCOS_LUT_RES_F_INV * i0);
++      d2 *= 0.5f *d;
++
++      //fetch sin/cos samples
++      ts = sinSamples[i0];
++      tc = cosSamples[i0];
++
++      //use Taylor-expansions for sin/cos around samples
++      sinValue = ts + d * tc - d2 * ts;
++
++       del_t[i] = params->tau * sinValue * params->step_inv - params->S0;
++   }
++
++   // number of timesteps that fit into the duration = at most the amount we had before
++   n_steps = params->nsamples_unpadded - 1;
++
++   // nearest_idx (see loop below) must not exceed n_unpadded - 1, so go back as far as needed to ensure that
++   while (n_steps - del_t[n_steps] >=  params->nsamples_unpadded - 1)
++      n_steps--;
++
++   unsigned int i;
++   float i_f;
++   for (i=0, i_f=0.5f; i<n_steps; i++, i_f+=1.0f) {
++      // sample i arrives at the detector at i_f - del_t[i], choose nearest neighbour
++      int nearest_idx = (int)(i_f - del_t[i]);
++
++      // set i-th bin in resampled time series (at the pulsar) to nearest_idx bin from de-dispersed time series
++      output[i] = input[nearest_idx];
++      mean += output[i];
++   }
++
++   logMessage(debug, true,"Time series sum: %f\n",mean);
++
++   mean /= i_f;
++
++   logMessage(debug, true, "Actual time series mean is: %e (length: %i)\n", mean, n_steps);
++
++   // fill up with mean if necessary
++   for( ; i < params->nsamples; i++) {
++      output[i] = mean;
++   }
++
++   return 0;
++}
