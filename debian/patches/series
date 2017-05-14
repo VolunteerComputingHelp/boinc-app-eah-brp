@@ -15,4 +15,4 @@ no_ffp_contract.patch
 prepare_simd_resamp_1.patch
 prepare_simd_resamp_2.patch
 add_simd_resamp_files_1.patch
-add_simd_resamp_files_1.patch
+add_simd_resamp_files_2.patch
