@@ -37,10 +37,20 @@ if [ -r "$DESTFILE" ]; then
 	exit 1
 fi
 
-echo "I: Computing wisdom file for BRP4. This will take several hours if not days."
+echo "I: Computing wisdom file for BRP4 and FGRP projects. This will take several hours if not days."
 echo
 
-fftwf-wisdom -n -v -o "$DESTFILE" rof12582912
+if [ -r /etc/fftw/wisdomf ]; then
+	echo "W: Rename existing /etc/fftw/wisdomf if you have not generated it yourself"
+	echo
+fi
+
+fftwf-wisdom -v -o "$DESTFILE" rof12582912 rob67108864
+# -n asks to ignore earlier wisdomf files (not set)
+# -c adds a collection of additional plans (not set)
+# rof12582912 supports BRP, identified by N30dG
+# rob67108864 is meant for a "2^26 length, complex to real inverse FFT" for FGRP
+#             as suggested by Bernd Machenschalk
 
 echo "I: Wisdom file was computed successfully. Do"
 echo "   sudo mkdir -p /etc/fftw"
