@@ -36,7 +36,7 @@ EXAMPLE
 
 AUTHORS
         Steffen Moeller <moeller@debian.org>
-        Christian Dreihsig <christiandreihsig@t-online.de>
+        Christian Dreihsig <christian.dreihsig@t-online.de>
 
 SEE ALSO
 	https://github.com/VolunteerComputingHelp/boinc-app-eah-brp/blob/master/debian/extra/create_wisdomf_eah_brp.sh
@@ -71,11 +71,11 @@ if [ -z "$ARCH" ]; then
 fi
 
 
-echo "I: Generating wisdom for 2^24 bit projects (BRP)"
+echo "I: Generating wisdom for (2^22)*3 sample projects (BRP)"
 TAGS=rof12582912
 
 if echo "$ARCH" | egrep -q 'i386|x86_64|powerpc'; then
-	echo "I: Also generating wisdom for 2^26 bit projects (FGRP)"
+	echo "I: Also generating wisdom for 2^26 sample projects (FGRP)"
 	TAGS="$TAGS rob67108864"
 
 else
