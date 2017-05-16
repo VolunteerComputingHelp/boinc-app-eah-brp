@@ -9,10 +9,38 @@ Homepage: https://einsteinathome.org/application-source-code-and-license
 Vcs-Git: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
 Vcs-Browser: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
 
+Package: boinc-app-eah-tools
+Architecture: all
+Depends: ${misc:Depends}, libfftw3-bin
+Suggests: boinc-app-eah-brp
+Description: Generator of fftw wisdom to accelerate Einstein@Home 
+ BOINC (Berkeley Open Infrastructure for Network Computing) is a volunteer
+ project to have regular citizens help with their compute power to address
+ large scientific challenges. To contribute, please see the home pages
+ of the BOINC project for details and follow the links to the respecitve
+ page of the scientific project.
+ .
+ The Einstein@Home project much depends on the FFTW3 fourrier
+ transformation library to identify repetitive signals in data from the
+ LIGO project. This identifies graviational waves from binary pulsars. And
+ as one can expect from any project that is at the brink of what humanity
+ can achieve, this is not straight forward to analyse. The FFTW3 library
+ offers the "wisdom" feature to pre-decide what internal algorithmic
+ variants to apply on a data sets of particular formats. This depends on
+ the size of the cache, hyperthreading on or off, the CPU vs memory speed
+ - somewhat different for everyone.  And it depends on the length of data
+ presented which again depends on the particlar Einstein@Home subproject.
+ .
+ This package provides a script to generate all the wisdom for all the
+ projects that are available for a given platform. Acceleration on the BRP
+ project is dramatic, i.e. it almost halves the compute time per work unit.
+ Experiences from other projects are yet pending. This package works with
+ both the Debian-compiled scientific apps and the upstream-distributed ones.
+
 Package: boinc-app-eah-brp
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, boinc-client
-Recommends: boinc-manager
+Recommends: boinc-manager, boinc-app-eah-tools
 Suggests: boinc-app-seti
 Description: BOINC extension for Einstein at Home binary pulsar search
  BOINC (Berkeley Open Infrastructure for Network Computing) is a volunteer
