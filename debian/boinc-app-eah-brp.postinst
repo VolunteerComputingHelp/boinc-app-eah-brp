@@ -4,7 +4,7 @@
 set -e
 
 BOINC_DIR=/var/lib/boinc-client
-PROJECT=eah_brp
+PROJECT=einstein.phys.uwm.edu
 
 init_boinc_client()
 {
