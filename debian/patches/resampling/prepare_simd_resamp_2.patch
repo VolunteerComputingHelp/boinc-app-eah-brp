@@ -1,31 +1,21 @@
---- boinc-app-eah-brp/demod_binary_resamp_cpu.c	2017-05-14 07:28:32.921485050 +0000
-+++ demod_binary_resamp_cpu.c	2017-05-14 07:53:42.415897286 +0000
-@@ -30,6 +30,7 @@
- #include <fftw3.h>
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.c	2017-05-20 10:16:45.000000000 +0000
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.c	2017-05-20 10:10:45.653512363 +0000
+@@ -31,6 +31,10 @@
  #include "demod_binary.h"
  #include "erp_utilities.h"
+ 
++/*****
++ * include sine-cosine-Lookuptable: needed by the new resampling
++ *****/
 +#include "sin_cos_LUT.c"
  
- 
  // TODO: do we wanna keep those global (or use proper C++, or pass them around)?
-@@ -39,11 +40,11 @@ float *del_t = NULL;
- int set_up_resampling(DIfloatPtr input_dip, DIfloatPtr *output_dip, const RESAMP_PARAMS *const params, float *sinLUTsamples, 
- float *cosLUTsamples)
- {
--    float * input = input_dip.host_ptr;
-+    //float * input = input_dip.host_ptr;
-     float ** output = & (output_dip->host_ptr);
- 
-     // unused
--    input = NULL;
-+    //input = NULL;
-     sinLUTsamples = NULL;
-     cosLUTsamples = NULL;
- 
-@@ -77,63 +78,8 @@ float *cosLUTsamples)
+ float *del_t = NULL;
+@@ -76,64 +80,74 @@
+     return 0;
  }
  
- 
+-
 -int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS *const params)
 -{
 -    float * input  = input_dip.host_ptr;
@@ -42,48 +32,95 @@
 -        float t = i_f * params->dt;
 -        float sinValue = 0.0f;
 -        float dummy = 0.0f;
--
--        // lookup sin(Omega * t + Psi0)
++/*****
++ * include new resampling-function
++ ****/
++
++#include "run_resampling_SCALAR.c"
++
++/*****
++ * commented out: we do not use this function anymore.
++ * Instead using the new resampling included above.
++ *****/
++
++//int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS *const params)
++//{
++//    float * input  = input_dip.host_ptr;
++//    float * output = output_dip.host_ptr;
++
++//    unsigned int i;
++//    float i_f;
++
++//    unsigned int n_steps;           // number of timesteps to take when resampling
++//    float mean = 0.0f;              // mean of the time series
++
++//    for(i = 0, i_f = 0.0f; i < params->nsamples_unpadded; i++, i_f += 1.0f)
++//    {
++//        float t = i_f * params->dt;
++//        float sinValue = 0.0f;
++//        float dummy = 0.0f;
+ 
+         // lookup sin(Omega * t + Psi0)
 -        sincosLUTLookup(params->Omega * t + params->Psi0, &sinValue, &dummy);
--
--        // compute time offsets as multiples of tsampm subtract zero time offset
++//        sincosLUTLookup(params->Omega * t + params->Psi0, &sinValue, &dummy);
+ 
+         // compute time offsets as multiples of tsampm subtract zero time offset
 -        del_t[i] = params->tau * sinValue * params->step_inv - params->S0;
 -    }
--
--    // number of timesteps that fit into the duration = at most the amount we had before
++//        del_t[i] = params->tau * sinValue * params->step_inv - params->S0;
++//    }
+ 
+     // number of timesteps that fit into the duration = at most the amount we had before
 -    n_steps = params->nsamples_unpadded - 1;
--
--    // nearest_idx (see loop below) must not exceed n_unpadded - 1, so go back as far as needed to ensure that
++//    n_steps = params->nsamples_unpadded - 1;
+ 
+     // nearest_idx (see loop below) must not exceed n_unpadded - 1, so go back as far as needed to ensure that
 -    while(n_steps - del_t[n_steps] >=  params->nsamples_unpadded - 1)
 -      n_steps--;
--
--    // loop over time at the pulsar (index i, i_f) and find the bin in detector time at which
--    // a signal sent at i at the pulsar would arrive at the detector
++//    while(n_steps - del_t[n_steps] >=  params->nsamples_unpadded - 1)
++//      n_steps--;
+ 
+     // loop over time at the pulsar (index i, i_f) and find the bin in detector time at which
+     // a signal sent at i at the pulsar would arrive at the detector
 -    for(i = 0, i_f = 0.0f; i < n_steps; i++, i_f += 1.0f)
 -      {
--	// sample i arrives at the detector at i_f - del_t[i], choose nearest neighbour
++//    for(i = 0, i_f = 0.0f; i < n_steps; i++, i_f += 1.0f)
++//      {
+ 	// sample i arrives at the detector at i_f - del_t[i], choose nearest neighbour
 -	int nearest_idx = (int)(i_f - del_t[i] + 0.5);
-+#include "run_resampling_SCALAR.c"
++//	int nearest_idx = (int)(i_f - del_t[i] + 0.5);
  
--	// set i-th bin in resampled time series (at the pulsar) to nearest_idx bin from de-dispersed time series
+ 	// set i-th bin in resampled time series (at the pulsar) to nearest_idx bin from de-dispersed time series
 -	output[i] = input[nearest_idx];
 -	mean += output[i];
 -      }
--
++//	output[i] = input[nearest_idx];
++//	mean += output[i];
++//      }
+ 
 -    logMessage(debug, true,"Time series sum: %f\n",mean);
--
++//    logMessage(debug, true,"Time series sum: %f\n",mean);
+ 
 -    mean /= i_f;
--
++//    mean /= i_f;
+ 
 -    logMessage(debug, true, "Actual time series mean is: %e (length: %i)\n", mean, n_steps);
--
--    // fill up with mean if necessary
++//    logMessage(debug, true, "Actual time series mean is: %e (length: %i)\n", mean, n_steps);
+ 
+     // fill up with mean if necessary
 -    for( ; i < params->nsamples; i++)
 -    {
 -        output[i] = mean;
 -    }
--
++//    for( ; i < params->nsamples; i++)
++//    {
++//        output[i] = mean;
++//    }
+ 
 -    return 0;
 -}
++//    return 0;
++//}
  
  
  int tear_down_resampling(DIfloatPtr output)

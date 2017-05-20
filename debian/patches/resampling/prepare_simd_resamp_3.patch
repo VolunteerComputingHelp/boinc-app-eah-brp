@@ -1,8 +1,15 @@
---- boinc-app-eah-brp.orig	/demod_binary.c	2017-05-14 15:00:21.387331714 +0000
-+++ boinc-app-eah-brp/demod_binary.c	2017-05-14 15:01:13.718397923 +0000
-@@ -1110,7 +1110,7 @@
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -1109,8 +1109,12 @@ int MAIN (unsigned int argc, char *argv[
+       return(RADPUL_EVAL);
      }
  
++  /*****
++   * commented out: the result of this function is not used
++   *****/
++
    // initialize sin/cos lookup tables (required during resampling)
 -  sincosLUTInitialize(&sinLUTsamples, &cosLUTsamples);
 +  //sincosLUTInitialize(&sinLUTsamples, &cosLUTsamples);

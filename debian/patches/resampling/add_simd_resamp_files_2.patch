@@ -1,6 +1,16 @@
---- /dev/null	2017-05-09 15:36:50.836517489 +0000
-+++ boinc-app-eah-brp/run_resampling_SCALAR.c	2017-05-14 09:29:12.514154173 +0000
-@@ -0,0 +1,67 @@
+Index: boinc-app-eah-brp/run_resampling_SCALAR.c
+===================================================================
+--- /dev/null
++++ boinc-app-eah-brp/run_resampling_SCALAR.c
+@@ -0,0 +1,75 @@
++/*****
++ * this is the new scalar resampling Function.
++ * Basically this is only the resampling from orginal code,
++ * merged together with sincosLUTLookup function from erp_utilities.cpp.
++ * This speeds up the app by approximately 4% and allows later implementation
++ * of SIMD.
++ *****/
++
 +int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS * const params) {
 +   float * input  = input_dip.host_ptr;
 +   float * output = output_dip.host_ptr;
