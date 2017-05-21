@@ -17,3 +17,4 @@ resampling/prepare_simd_resamp_2.patch
 resampling/prepare_simd_resamp_3.patch
 resampling/add_simd_resamp_files_1.patch
 resampling/add_simd_resamp_files_2.patch
+resampling/add_simd_resamp_files_3.patch

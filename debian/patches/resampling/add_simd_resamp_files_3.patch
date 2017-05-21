@@ -1,0 +1,131 @@
+Index: boinc-app-eah-brp/run_resampling_NEON.c
+===================================================================
+--- /dev/null
++++ boinc-app-eah-brp/run_resampling_NEON.c
+@@ -0,0 +1,126 @@
++/*****
++ * SIMD-Resampling Function for ARM-Devices with NEON,
++ * using NEON-intrinsics. It is written for ARMv8-Devices,
++ * with 128bit wide Vectors and 32 Registers.
++ *
++ * This maybe work also on ARMv7-Devices *UNTESTED*
++ *
++ * use run_resampling_SCALAR.c as reference while reading this
++ *****/
++
++#include <arm_neon.h>
++
++int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS * const params) {
++    float * input = input_dip.host_ptr;
++    float * output = output_dip.host_ptr;
++
++    unsigned int n_steps; // number of timesteps to take when resampling
++    float mean = 0.0f; // mean of the time series
++
++    uint32_t i0[4]; //LUT-index for lookup
++
++    //Preload values from params-struct (we have 32 registers, preload everything)
++    float32x4_t vectF_dt = vdupq_n_f32(params->dt);
++    float32x4_t vectF_Omega = vdupq_n_f32(params->Omega);
++    float32x4_t vectF_Psi0 = vdupq_n_f32(params->Psi0);
++    float32x4_t vectF_tau = vdupq_n_f32(params->tau);
++    float32x4_t vectF_stepInv = vdupq_n_f32(params->step_inv);
++    float32x4_t vectF_s0 = vdupq_n_f32(params->S0);
++
++    //Preload some constants
++    float32x4_t vectF_2Pi = vdupq_n_f32(ERP_TWO_PI);
++    float32x4_t vectF_2PiInv = vdupq_n_f32(ERP_TWO_PI_INV);
++    float32x4_t vectF_sinLutRes = vdupq_n_f32(ERP_SINCOS_LUT_RES_F);
++    float32x4_t vectF_sinLutResInv = vdupq_n_f32(ERP_SINCOS_LUT_RES_F_INV);
++
++    //Preload some fixed numbers.
++    float32x4_t vectF_05 = vdupq_n_f32(0.5f); //load 0.5
++    int16x4_t vect_4 = vdup_n_s16(4); // load 4
++
++    //Init loop-index
++    int32_t iInitVal[] = {-4, -3, -2, -1}; //init Values i
++    int32x4_t vect_i = vld1q_s32(iInitVal); //load i in vector
++
++    for (uint32_t i=0; i< params->nsamples_unpadded; i+=4) {
++        //increment loop-index
++        vect_i = vaddw_s16(vect_i, vect_4); //i + 4
++        float32x4_t vectF_i = vcvtq_f32_s32(vect_i); //i to float (faster than counting in a float)
++
++        //determine x for sine-lookup
++        float32x4_t vectF_x = vmulq_f32(vectF_i, vectF_dt); //i * params->dt
++        vectF_x = vmlaq_f32(vectF_Psi0, vectF_x, vectF_Omega); // * params->Omega + params->Psi0
++
++        //xPi = modff(ERP_TWO_PI_INX * x, unused)
++        float32x4_t vectF_xPi = vmulq_f32(vectF_2PiInv, vectF_x); //ERP_TWO_PI_INV * x
++        int32x4_t vect_xPi0 = vcvtq_s32_f32(vectF_xPi); //convert xPi to int
++        float32x4_t vectF_xPi0 = vcvtq_f32_s32(vect_xPi0); //convert back to float
++	vectF_x = vsubq_f32(vectF_xPi, vectF_xPi0); //x_pi - (int)x_pi
++
++        //determine LUT-index
++        float32x4_t vectF_i0 = vmlaq_f32(vectF_05, vectF_x, vectF_sinLutRes); //x * ERP_SINCOS_LUT_RES_F + 0.5f
++        uint32x4_t vect_i0 = vcvtq_u32_f32(vectF_i0); //convert i0 to int
++        vectF_i0 = vcvtq_f32_u32(vect_i0); //convert i0 back to float
++        vst1q_u32(i0, vect_i0); //Move i0 to core
++
++        //Load sin-LUT-values to vector
++        float32x4_t vectF_sin, vectF_cos;
++        for (int j=0; j<4; j++) {
++            vectF_sin = vld1q_lane_f32(&sinSamples[i0[j]], vectF_sin, j);
++            vectF_cos = vld1q_lane_f32(&cosSamples[i0[j]], vectF_cos, j);
++        }
++
++	//determine d & d2 for taylor-expansions
++        float32x4_t vectF_d = vmlsq_f32(vectF_x, vectF_sinLutResInv , vectF_i0); //x - ERP_SINCOS_LUT_RES_F_INV * i0[j]
++        vectF_d = vmulq_f32(vectF_2Pi, vectF_d); //ERP_TWO_PI * d
++        float32x4_t vectF_d2 = vmulq_f32(vectF_d, vectF_05); //d2 = d * 0.5
++        vectF_d2 = vmulq_f32(vectF_d2, vectF_d); //d2 * d
++
++        //get sine(x) using taylor-expansion
++        float32x4_t vectF_sinVal = vmlaq_f32(vectF_sin, vectF_d, vectF_cos); //sin + d * cos
++        //vectF_sinVal = vmlsq_f32(vectF_sinVal, vectF_d2, vectF_sin); //sorry no fused multiply substract here
++        float32x4_t volatile vectF_dL2 = vmulq_f32(vectF_d2, vectF_sin); //d2 * sin (volatile to prevent gcc from reordering this)
++        vectF_sinVal = vsubq_f32(vectF_sinVal, vectF_dL2); // -= (d2 * sin)
++
++        //determine del_t
++        float32x4_t vectF_delt = vmulq_f32(vectF_tau, vectF_sinVal); // params->tau * sineValue
++        vectF_delt = vmulq_f32(vectF_delt, vectF_stepInv); // * params->step_inv
++        vectF_delt = vsubq_f32(vectF_delt, vectF_s0); // - params->S0
++
++        //store out del_t
++        vst1q_f32(&del_t[i], vectF_delt); //write to del_t
++    }
++
++
++    // number of timesteps that fit into the duration = at most the amount we had before
++    n_steps = params->nsamples_unpadded - 1;
++
++    //NOT Vectorizable -> break condition
++    // nearest_idx (see loop below) must not exceed n_unpadded - 1, so go back as far as needed to ensure that
++    while(n_steps - del_t[n_steps] >= params->nsamples_unpadded - 1)
++        n_steps--;
++
++
++    unsigned int i; float32_t i_f;
++    for(i=0, i_f = 0.5f; i < n_steps; i++, i_f += 1.0f) {
++        // sample i arrives at the detector at i_f - del_t[i], choose nearest neighbour
++        int nearest_idx = (int)(i_f - del_t[i]);
++        // set i-th bin in resampled time series (at the pulsar) to nearest_idx bin from de-dispersed time series
++        output[i] = input[nearest_idx];
++        mean += output[i];
++    }
++
++    logMessage(debug, true,"Time series sum: %f\n", mean);
++
++    mean /= (i_f - 0.5f);
++
++    logMessage(debug, true, "Actual time series mean is: %e (length: %i)\n", mean, n_steps);
++
++
++    // Auto-Vectorized by gcc
++    // fill up with mean if necessary
++    for(unsigned int j=i ; j < params->nsamples; j++) {
++        output[j] = mean;
++    }
++
++    return 0;
++}

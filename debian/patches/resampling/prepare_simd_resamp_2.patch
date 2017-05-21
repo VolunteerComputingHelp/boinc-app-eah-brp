@@ -1,5 +1,7 @@
---- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.c	2017-05-20 10:16:45.000000000 +0000
-+++ boinc-app-eah-brp/demod_binary_resamp_cpu.c	2017-05-20 10:10:45.653512363 +0000
+Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.c
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.c
 @@ -31,6 +31,10 @@
  #include "demod_binary.h"
  #include "erp_utilities.h"
@@ -11,11 +13,21 @@
  
  // TODO: do we wanna keep those global (or use proper C++, or pass them around)?
  float *del_t = NULL;
-@@ -76,64 +80,74 @@
+@@ -76,64 +80,79 @@ float *cosLUTsamples)
      return 0;
  }
  
--
++/*****
++ * detected SIMD-architecture and include corresponing file
++ *****/
++#ifdef __ARM_NEON
++    #pragma message "Detected NEON -> using run_resampling_NEON.c"
++    #include "run_resampling_NEON.c"
++#else
++    #pragma message "No SIMD detected -> using run_resampling_SCALAR.c"
++    #include "run_resampling_SCALAR.c"
++#endif
+ 
 -int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS *const params)
 -{
 -    float * input  = input_dip.host_ptr;
@@ -32,12 +44,6 @@
 -        float t = i_f * params->dt;
 -        float sinValue = 0.0f;
 -        float dummy = 0.0f;
-+/*****
-+ * include new resampling-function
-+ ****/
-+
-+#include "run_resampling_SCALAR.c"
-+
 +/*****
 + * commented out: we do not use this function anymore.
 + * Instead using the new resampling included above.
