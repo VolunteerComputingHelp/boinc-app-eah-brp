@@ -13,7 +13,7 @@ Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
  
  // TODO: do we wanna keep those global (or use proper C++, or pass them around)?
  float *del_t = NULL;
-@@ -76,64 +80,79 @@ float *cosLUTsamples)
+@@ -76,64 +80,82 @@ float *cosLUTsamples)
      return 0;
  }
  
@@ -23,6 +23,9 @@ Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
 +#ifdef __ARM_NEON
 +    #pragma message "Detected NEON -> using run_resampling_NEON.c"
 +    #include "run_resampling_NEON.c"
++#elif __AVX__
++    #pragma message "Detected AVX -> using run_resampling_AVX.c"
++    #include "run_resampling_AVX.c"
 +#else
 +    #pragma message "No SIMD detected -> using run_resampling_SCALAR.c"
 +    #include "run_resampling_SCALAR.c"
