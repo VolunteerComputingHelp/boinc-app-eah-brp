@@ -1,6 +1,11 @@
 boinc-app-eah-brp for Debian
 ----------------------------
 
+This package is based on the sources redistributed as a zip file
+by upstream as found by the debian/watch file. The first version
+shipping with Debian gave itself version 0.20170426 which was
+assigned version 20160418095741 by upstream during a later revision.
+
 The .zip file provided by upstream redistributes binaries for CUDA and
 OpenCL which were removed from this source tree. The CUDA example
 "cuPrintf" was also removed.

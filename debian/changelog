@@ -1,8 +1,10 @@
 boinc-app-eah-brp (0.20170426+dfsg-3) UNRELEASED; urgency=medium
 
   * Integrate CPPFLAGS in build - avoids build log warning
-  * Fixed debiann/watch - many thanks go to upstream for providing
+  * Fixed debian/watch - many thanks go to upstream for providing
     the versioned download URL.
+  * Rephrased debian/README.source and debian/README.Debian.
+  * Bunmped standard to 4.1.2 - no changed required.
 
  -- Steffen Moeller <moeller@debian.org>  Fri, 08 Dec 2017 22:02:09 +0100
 
