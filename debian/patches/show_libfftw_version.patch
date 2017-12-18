@@ -1,0 +1,30 @@
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -511,6 +511,12 @@ int MAIN (unsigned int argc, char *argv[
+   logMessage(info, false, "Debian package version: %s\n", DEBIAN_VERSION);
+   logMessage(info, false, "Debian package architecture: %s\n", DEB_TARGET_ARCH_OS);
+   logMessage(info, false, "Debian package CPU: %s\n", DEB_TARGET_GNU_CPU);
++  logMessage(info, false, "Compiler version: %s\n", CXX_VERSION_LONG);
++  logMessage(info, false, "Compiler flags: %s\n", CFLAGS);
++  {
++    extern const char fftw_version[];
++    logMessage(info, false, "FFTW version: %s\n", fftw_version);
++  }
+ 
+   // determine total number of templates
+   while(1)
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -29,7 +29,7 @@ CXX ?= g++
+ #LIBS += -Wl,-Bstatic
+ LIBS += -L$(EINSTEIN_RADIO_INSTALL)/lib64 -L$(EINSTEIN_RADIO_INSTALL)/lib
+ #LIBS += $(shell gsl-config --libs)
+-LIBS += $(shell export PKG_CONFIG_PATH=$(EINSTEIN_RADIO_INSTALL)/lib/pkgconfig && pkg-config --libs fftw3f)
++LIBS += $(shell export PKG_CONFIG_PATH=$(EINSTEIN_RADIO_INSTALL)/lib/pkgconfig && pkg-config --libs fftw3f fftw3)
+ LIBS += $(shell xml2-config --libs)
+ LIBS += -L/usr/lib/$(dpkg-architecture -qDEB_BUILD_GNU_TYPE) -lboinc_api -lboinc
+ LIBS += -lbfd -liberty

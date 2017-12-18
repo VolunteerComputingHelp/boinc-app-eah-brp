@@ -68,17 +68,17 @@ export EINSTEINBINARY_TARGET = einsteinbinary_BRP4
 
 CFLAGS_APPEND += $(CPPFLAGS)
 
-CFLAGS_APPEND += -DDEBIAN_VERSION="\"$(DEBIAN_VERSION)\""
 
 
 # Append this to CFLAGS and CXXFLAGS.
 CFLAGS_APPEND += -I/usr/include/boinc -I/usr/include/boinc/lib -I/usr/include/boinc/api
+CXX_VERSION_LONG=$(shell $(CXX) --version|head -n 1)
 
 ifneq (clang,$(CXX))
+GCCVERSION=$(shell $(CXX) --version | tr " " "\n" | egrep '^[0-9]+\.[0-9]+\.[0-9]+$$' | cut -f1,2 -d.)
 CFLAGS_APPEND += -O3
 #CFLAGS_APPEND += -mno-avx
 #CFLAGS_APPEND += -msse4.2
-GCCVERSION=$(shell $(CXX) --version | tr " " "\n" | egrep '^[0-9]+\.[0-9]+\.[0-9]+$$' | cut -f1,2 -d.)
 endif
 
 ifeq (clang,$(CXX))
@@ -86,10 +86,6 @@ GCCVERSION=$(shell $(CXX) --version | tr " " "\n" | egrep '^[0-9]+\.[0-9]+-[0-9]
 CFLAGS_APPEND += -O3
 # -O4 implies link-time optimisation with clang, fails
 endif
-
-DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
-CFLAGS_APPEND += -DDEB_TARGET_ARCH_OS="\"$(DEB_TARGET_ARCH_OS)\""
-CFLAGS_APPEND += -DDEB_TARGET_GNU_CPU="\"$(DEB_TARGET_GNU_CPU)\""
 
 ifeq (linux,$(DEB_TARGET_ARCH_OS))
 ifneq (,$(findstring local,$(DEB_BUILD_OPTIONS)))
@@ -119,6 +115,13 @@ ifeq ($(DEB_TARGET_GNU_CPU),x86_64)
 endif
 endif
 
+CFLAGS_APPEND := $(CFLAGS_APPEND) -DCFLAGS="\"$(CFLAGS_APPEND)\""
+
+DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
+CFLAGS_APPEND += -DDEBIAN_VERSION="\"$(DEBIAN_VERSION)\""
+CFLAGS_APPEND += -DDEB_TARGET_ARCH_OS="\"$(DEB_TARGET_ARCH_OS)\""
+CFLAGS_APPEND += -DDEB_TARGET_GNU_CPU="\"$(DEB_TARGET_GNU_CPU)\""
+CFLAGS_APPEND += -DCXX_VERSION_LONG="\"$(CXX_VERSION_LONG)\""
 
 CXXFLAGS += $(CFLAGS_APPEND)
 $(info I: Extended CXXFLAGS: $(CXXFLAGS))
