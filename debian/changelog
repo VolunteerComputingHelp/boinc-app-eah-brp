@@ -1,10 +1,17 @@
-boinc-app-eah-brp (0.20170426+dfsg-3) UNRELEASED; urgency=medium
+boinc-app-eah-brp (0.20170426+dfsg-3) unstable; urgency=medium
 
-  * Integrate CPPFLAGS in build - avoids build log warning
+  * Integrate CPPFLAGS in build - avoids build log warning.
   * Fixed debian/watch - many thanks go to upstream for providing
     the versioned download URL.
   * Rephrased debian/README.source and debian/README.Debian.
-  * Bunmped standard to 4.1.2 - no changed required.
+  * debian/control:
+    - Bunmped standard to 4.1.2 - no changed required.
+    - Added runtime dependency on binutils.
+    - Simplified homepage to einsteinhome.org, away from source code
+      download.
+  * debian/rules: 
+    - Binary version set to 0.56.
+    - Preparing for adding details on Debian package to BOINC logs
 
  -- Steffen Moeller <moeller@debian.org>  Fri, 08 Dec 2017 22:02:09 +0100
 

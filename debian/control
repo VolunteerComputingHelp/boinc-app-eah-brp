@@ -5,31 +5,33 @@ Maintainer: Debian BOINC Maintainers <pkg-boinc-devel@lists.alioth.debian.org>
 Uploaders: Steffen Moeller <moeller@debian.org>, Christian Dreihsig <christian.dreihsig@t-online.de>
 Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev|libgsl0-dev, binutils-dev,  libfftw3-dev, pkg-config
 Standards-Version: 4.1.2
-Homepage: https://einsteinathome.org/application-source-code-and-license
+Homepage: https://einsteinathome.org/
 Vcs-Git: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
 Vcs-Browser: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
 
 Package: boinc-app-eah-brp
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, boinc-client
+Depends: ${shlibs:Depends}, ${misc:Depends}, boinc-client, binutils
 Recommends: boinc-manager
 Suggests: boinc-app-seti
-Description: BOINC extension for Einstein at Home binary pulsar search
+Description: BOINC extension for Einstein@Home binary pulsar search
  BOINC (Berkeley Open Infrastructure for Network Computing) is a volunteer
  project to have regular citizens help with their compute power to address
- large scientific challenges. To contribute, please see the home pages
- of the BOINC project for details and follow the links to the respecitve
- page of the scientific project.
+ large scientific challenges. For details on the science please inspect
+ the project's home page. To contribute, follow the "Add Project"
+ selection box of the BOINC manager or use the command line interface
+ of the BOINC client.
  .
  This package provides an executable for the Binary Pulsar Search
  subproject of the Einstein@Home project. Regular users would
- auto-download that executable via the BOINC-Client application or
- the BOINC-Manager. This package provides the equivalent binary but
- compiled on the Debian build demons. As such it is available to many
- more platforms than what could possibly be provided by the scientists
- themselves. Also, recompiling the package is likely to yield an
- executable well-optimized for the local machine that outperformes
- the official executable.
+ auto-download that executable provided by the scientific project
+ maintainers. The binary provided by this package is functionally
+ equivalent to the official one. It was however compiled on the Debian
+ build demons. As such it is available to many more platforms than
+ what could possibly be provided by the scientists themselves.
+ Also, recompiling the package is likely to yield an executable
+ well-optimized for the local machine that outperforms the official
+ executable.
  .
  Quite some also run the Debian-provided packages for security concerns.
  They already decided to trust the Debian community and appreciated

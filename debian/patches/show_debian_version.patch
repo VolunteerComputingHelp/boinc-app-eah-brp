@@ -1,0 +1,32 @@
+Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
++++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -383,6 +383,9 @@ static int worker(void)
+                 logMessage(info, true, "Version information:\n");
+                 logMessage(info, false, "Binary Pulsar Search Revision: %s\n", ERP_GIT_VERSION);
+                 logMessage(info, false, "BOINC Revision: %s\n", SVN_VERSION);
++		logMessage(info, false, "Debian package version: %s\n", DEBIAN_VERSION);
++		logMessage(info, false, "Debian package architecture: %s\n", DEB_TARGET_ARCH_OS);
++		logMessage(info, false, "Debian package CPU: %s\n", DEB_TARGET_GNU_CPU);
+                 return 0;
+ 
+             case '?':
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -505,6 +505,13 @@ int MAIN (unsigned int argc, char *argv[
+       return(RADPUL_EIO);
+     }
+ 
++  logMessage(info, true, "Version information:\n");
++  logMessage(info, false, "Binary Pulsar Search Revision: %s\n", ERP_GIT_VERSION);
++  logMessage(info, false, "BOINC Revision: %s\n", SVN_VERSION);
++  logMessage(info, false, "Debian package version: %s\n", DEBIAN_VERSION);
++  logMessage(info, false, "Debian package architecture: %s\n", DEB_TARGET_ARCH_OS);
++  logMessage(info, false, "Debian package CPU: %s\n", DEB_TARGET_GNU_CPU);
++
+   // determine total number of templates
+   while(1)
+     {

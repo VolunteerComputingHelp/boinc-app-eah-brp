@@ -19,9 +19,15 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
 
-DEB_BUILD_GNU_CPU  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_CPU)
+DEB_TARGET_GNU_CPU  ?= $(shell dpkg-architecture -qDEB_TARGET_GNU_CPU)
 DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_TARGET_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_TARGET_GNU_TYPE)
+
+DEBIAN_VERSION ?= $(shell head -n 1 debian/changelog | cut -f2 -d\( | cut -f1 -d\) )
+
+$(info DEB_TARGET_GNU_CPU: $(DEB_TARGET_GNU_CPU))
+$(info DEB_TARGET_GNU_TYPE: $(DEB_TARGET_GNU_TYPE))
+$(info DEBIAN_VERSION: $(DEBIAN_VERSION))
 
 
 # PKG = boinc-app-eah-brp
@@ -62,6 +68,8 @@ export EINSTEINBINARY_TARGET = einsteinbinary_BRP4
 
 CFLAGS_APPEND += $(CPPFLAGS)
 
+CFLAGS_APPEND += -DDEBIAN_VERSION="\"$(DEBIAN_VERSION)\""
+
 
 # Append this to CFLAGS and CXXFLAGS.
 CFLAGS_APPEND += -I/usr/include/boinc -I/usr/include/boinc/lib -I/usr/include/boinc/api
@@ -79,7 +87,11 @@ CFLAGS_APPEND += -O3
 # -O4 implies link-time optimisation with clang, fails
 endif
 
-ifeq (linux,$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS))
+DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
+CFLAGS_APPEND += -DDEB_TARGET_ARCH_OS="\"$(DEB_TARGET_ARCH_OS)\""
+CFLAGS_APPEND += -DDEB_TARGET_GNU_CPU="\"$(DEB_TARGET_GNU_CPU)\""
+
+ifeq (linux,$(DEB_TARGET_ARCH_OS))
 ifneq (,$(findstring local,$(DEB_BUILD_OPTIONS)))
 LOCALOPTIMISATION="yes"
 endif
@@ -97,12 +109,12 @@ ifneq (,$(LOCALOPTIMISATION))
   CFLAGS_APPEND += -march=native -mtune=native
 else
   $(info W: _Not_ setting native flags for optimisation)
-ifeq ($(DEB_BUILD_GNU_CPU),i686)
+ifeq ($(DEB_TARGET_GNU_CPU),i686)
   $(info W: Not supporting earlier systems than i686)
   # Demand i686 class system
   CFLAGS_APPEND += -march=i686 -mcpu=i686
 endif
-ifeq ($(DEB_BUILD_GNU_CPU),x86_64)
+ifeq ($(DEB_TARGET_GNU_CPU),x86_64)
   #CFLAGS_APPEND += -mavx -msse3 
 endif
 endif
@@ -112,12 +124,13 @@ CXXFLAGS += $(CFLAGS_APPEND)
 $(info I: Extended CXXFLAGS: $(CXXFLAGS))
 
 
-# Get upstream version from debian version.
-UPSTREAM_VERSION = $(shell dpkg-parsechangelog | egrep '^Version:' | \
-  cut -d ' ' -f 2 | cut -d '-' -f 1 | cut -d '+' -f 1 | cut -d '~' -f 1 | perl -pe 's/^.*?://')
-# Remove dot "." in upstream version for use in app_info.xml
-#APP_INFO_VERSION = $(subst .,,$(UPSTREAM_VERSION))
-APP_INFO_VERSION = 1
+## Get upstream version from debian version.
+#UPSTREAM_VERSION = $(shell dpkg-parsechangelog | egrep '^Version:' | \
+#  cut -d ' ' -f 2 | cut -d '-' -f 1 | cut -d '+' -f 1 | cut -d '~' -f 1 | perl -pe 's/^.*?://')
+## Remove dot "." in upstream version for use in app_info.xml
+##APP_INFO_VERSION = $(subst .,,$(UPSTREAM_VERSION))
+# 56 was agreed with upstream
+APP_INFO_VERSION = 56
 
 
 %:
