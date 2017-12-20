@@ -12,6 +12,7 @@ boinc-app-eah-brp (0.20170426+dfsg-3) unstable; urgency=medium
   * debian/rules: 
     - Binary version set to 0.56.
     - Preparing for adding details on Debian package to BOINC logs
+  * Adding log entry about if and which FFTW wisdom file is loaded
 
  -- Steffen Moeller <moeller@debian.org>  Fri, 08 Dec 2017 22:02:09 +0100
 

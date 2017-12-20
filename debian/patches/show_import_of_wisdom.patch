@@ -1,0 +1,68 @@
+Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_fft_fftw.c
++++ boinc-app-eah-brp/demod_binary_fft_fftw.c
+@@ -28,6 +28,7 @@
+ 
+ #include <stdlib.h>
+ #include <gsl/gsl_math.h>
++#include <sys/stat.h>
+ #include "demod_binary.h"
+ #include "erp_utilities.h"
+ 
+@@ -63,9 +64,53 @@ int set_up_fft(DIfloatPtr input, DIfloat
+     /// else load system wide wisdom if present
+ 
+ #ifdef EMBEDDED_WISDOM_HEADER
+-    fftwf_import_wisdom_from_string(EMBEDDED_WISDOM);
++    if (fftwf_import_wisdom_from_string(EMBEDDED_WISDOM))
++    {
++        logMessage(info, true, "Successfully imported wisdom from string \"%s\".\n",EMBEDDED_WISDOM);
++    }
++    else
++    {
++        logMessage(error, true, "Failed to import wisdom from string \"%s\".\n",EMBEDDED_WISDOM);
++    }
+ #else
+-    fftwf_import_system_wisdom();
++    // checking if BRP wisdom file exists, prefering that over system wisdom file
++    {
++        struct stat buffer;
++        const char wisdomfilename[]="/etc/fftw/brp4.wisdomf";
++        // checking if wisdomfilename exists, opening it if it does, falling back to system wisdom if not
++	if (!stat(wisdomfilename,&buffer))
++	{
++            if (fftwf_import_wisdom_from_filename(wisdomfilename))
++	    {
++                logMessage(info, true, "Successfully imported FFTW wisdom from file '%s'.\n", wisdomfilename);
++            }
++	    else
++	    {
++                logMessage(error, true, "Failed to import FFTW wisdom from file '%s'. Continuing without that optimisation.\n", wisdomfilename);
++            }
++	}
++	else
++	{
++            if (fftwf_import_system_wisdom())
++            {
++                logMessage(info, true, "Successfully imported system wisdom.\n");
++            }
++            else
++            {
++        	// preparing test for file to exist
++        	const char filename[]="/etc/fftw/wisdomf";
++        	if (stat(filename,&buffer))
++		{
++		    logMessage(info, true, "No wisdom found. Consider to create application specific wisdom file for FFTW library at '%s'.\n", wisdomfilename);
++		}
++		else
++        	{
++        	    logMessage(error, true, "Failed to import FFTW system-wide wisdom even though '%s' exists.\n", filename);
++		    logMessage(info, false, "Consider to create application specific wisdom file at '%s'.\n", wisdomfilename);
++        	}
++            }
++        }
++    }
+ #endif
+     fft_plan = fftwf_plan_dft_r2c_1d(nsamples, input.host_ptr, t_series_resamp_fft, FFTW_ESTIMATE);
+ 

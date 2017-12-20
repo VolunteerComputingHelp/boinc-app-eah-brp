@@ -14,3 +14,4 @@ avoid_warnings_5.patch
 no_ffp_contract.patch
 show_debian_version.patch
 show_libfftw_version.patch
+show_import_of_wisdom.patch
