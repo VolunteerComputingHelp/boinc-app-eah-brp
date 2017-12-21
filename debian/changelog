@@ -1,4 +1,10 @@
-boinc-app-eah-brp (0.20170426+dfsg-3) unstable; urgency=medium
+boinc-app-eah-brp (0.20170426+dfsg-4) unstable; urgency=medium
+
+  * Integrated -fuse-profile in build process.
+
+ -- Steffen Moeller <moeller@debian.org>  Wed, 20 Dec 2017 17:23:16 +0100
+
+boinc-app-eah-brp (0.20170426+dfsg-3) UNRELEASED; urgency=medium
 
   * Integrate CPPFLAGS in build - avoids build log warning.
   * Fixed debian/watch - many thanks go to upstream for providing

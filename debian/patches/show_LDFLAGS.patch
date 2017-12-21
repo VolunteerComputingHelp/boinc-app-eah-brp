@@ -1,0 +1,24 @@
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -513,6 +513,7 @@ int MAIN (unsigned int argc, char *argv[
+   logMessage(info, false, "Debian package CPU: %s\n", DEB_TARGET_GNU_CPU);
+   logMessage(info, false, "Compiler version: %s\n", CXX_VERSION_LONG);
+   logMessage(info, false, "Compiler flags: %s\n", CFLAGS);
++  logMessage(info, false, "Linker flags: %s\n", LDFLAGS);
+   {
+     extern const char fftw_version[];
+     logMessage(info, false, "FFTW version: %s\n", fftw_version);
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -58,6 +58,7 @@ OBJS = demod_binary.o demod_binary_resam
+ EINSTEINBINARY_TARGET ?= einsteinbinary
+ TARGET = $(EINSTEINBINARY_TARGET)
+ CXXFLAGS += -DTARGET=\"$(TARGET)\"
++CXXFLAGS += -DLDFLAGS="\"$(LDFLAGS)\""
+ 
+ # primary role based tagets
+ default: release

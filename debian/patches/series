@@ -15,3 +15,5 @@ no_ffp_contract.patch
 show_debian_version.patch
 show_libfftw_version.patch
 show_import_of_wisdom.patch
+allow_profiling.patch
+show_LDFLAGS.patch

@@ -138,6 +138,12 @@ APP_INFO_VERSION = 56
 
 %:
 	dh $@
+	
+override_dh_auto_build: 
+	@echo Building with gprof parameters and running example workflow
+	$(MAKE) profile
+	@echo Compiling with runtime parameters learned
+	$(MAKE) release
 
 override_dh_install: 
 	cat debian/extra/app_info.xml.in | perl -ne 'print unless /^#/' | \
@@ -147,4 +153,9 @@ override_dh_install:
 override_dh_auto_clean:
 	make clean || echo "I: Make clean fails with no patches applied - please ignore"
 	dh_clean stderr.old stderr.txt boinc_EinsteinRadio_0 boinc_EinsteinRadio_0 boinc_finish_called
-	dh_clean einsteinbinary einsteinbinary_BRP4
+	dh_clean einsteinbinary einsteinbinary_BRP4 
+	dh_clean results_profile.cand *.gcda
+	dh_clean debian/extra/einstein_bench/boinc_EinsteinRadio_0 \
+	         debian/extra/einstein_bench/boinc_finish_called \
+	         debian/extra/einstein_bench/stderr.txt \
+	         debian/extra/einstein_bench/testwu/stochastic_full.bank.*
