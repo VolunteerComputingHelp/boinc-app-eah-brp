@@ -17,4 +17,5 @@ debian/files
 
 # generated
 debian/extra/app_info.xml
-
+*.gcda
+results_profile.cand

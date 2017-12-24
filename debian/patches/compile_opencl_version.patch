@@ -1,0 +1,58 @@
+Index: boinc-app-eah-brp/opencl/app/demod_binary_ocl.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/opencl/app/demod_binary_ocl.cpp
++++ boinc-app-eah-brp/opencl/app/demod_binary_ocl.cpp
+@@ -32,6 +32,7 @@
+ #include <cstdlib>
+ 
+ #include <clFFT.h>
++#include <stdio.h>
+ 
+ #include "ocl_utilities.h"
+ #include "../../demod_binary.h"
+Index: boinc-app-eah-brp/Makefile.linux.opencl
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile.linux.opencl
++++ boinc-app-eah-brp/Makefile.linux.opencl
+@@ -29,21 +29,19 @@ ARCH=`uname -m`
+ CXX ?= g++
+ 
+ # variables
+-LIBS += -Wl,-Bstatic
+ LIBS += -L$(EINSTEIN_RADIO_INSTALL)/lib64 -L$(EINSTEIN_RADIO_INSTALL)/lib
+ LIBS += $(shell $(EINSTEIN_RADIO_INSTALL)/bin/gsl-config --libs)
+ LIBS += $(shell export PKG_CONFIG_PATH=$(EINSTEIN_RADIO_INSTALL)/lib/pkgconfig && pkg-config --libs fftw3f)
+ LIBS += $(shell $(EINSTEIN_RADIO_INSTALL)/bin/xml2-config --libs)
+ LIBS += -lclfft
+-LIBS += -lboinc_opencl -lboinc_api -lboinc
++LIBS += -L/usr/lib/$(shell dpkg-architecture  -q DEB_TARGET_MULTIARCH) -lboinc_opencl -lboinc_api -lboinc
+ LIBS += -lbfd -liberty
+ LIBS += -L/usr/lib
+ LIBS += -lstdc++
+-LIBS += -Wl,-Bdynamic
+ LIBS += -L$(AMDAPPSDKROOT)/lib/$(ARCH)
+ LIBS += -lOpenCL
+ LIBS += -lpthread -lm -lc
+-LIBS += $(EINSTEIN_RADIO_INSTALL)/lib/libz.a
++LIBS += -lz
+ 
+ LDFLAGS += -static-libgcc
+ 
+@@ -53,6 +51,9 @@ CXXFLAGS += $(shell export PKG_CONFIG_PA
+ CXXFLAGS += $(shell $(EINSTEIN_RADIO_INSTALL)/bin/xml2-config --cflags)
+ CXXFLAGS += -I$(EINSTEIN_RADIO_INSTALL)/include/boinc
+ CXXFLAGS += -I$(NVIDIA_SDK_INSTALL_PATH)/cuda/include -I$(AMDAPPSDKROOT)/include -I../include
++CXXFLAGS += -Iopencl/app/
++CXXFLAGS += -I/usr/include/libiberty
++CXXFLAGS += -fPIC
+ CXXFLAGS += -malign-double
+ CXXFLAGS += -DHAVE_INLINE -DBOINCIFIED
+ CXXFLAGS += -DUSE_OPENCL
+@@ -61,6 +62,7 @@ DEPS = Makefile
+ OBJS = demod_binary.o demod_binary_ocl.o ocl_utilities.o hs_common.o rngmed.o erp_boinc_ipc.o erp_getopt.o erp_getopt1.o erp_utilities.o erp_execinfo_plus.o
+ EINSTEINBINARY_TARGET ?= einsteinbinary_opencl
+ TARGET = $(EINSTEINBINARY_TARGET)
++CXXFLAGS += -DTARGET="\"$(TARGET)\""
+ 
+ # primary role based tagets
+ default: release

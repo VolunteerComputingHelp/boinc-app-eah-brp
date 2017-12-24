@@ -109,13 +109,15 @@ ifeq ($(DEB_TARGET_GNU_CPU),i686)
   $(info W: Not supporting earlier systems than i686)
   # Demand i686 class system
   CFLAGS_APPEND += -march=i686 -mcpu=i686
+  CFLAGS_APPEND += -mfpmath=sse -msse
 endif
 ifeq ($(DEB_TARGET_GNU_CPU),x86_64)
   #CFLAGS_APPEND += -mavx -msse3 
+  CFLAGS_APPEND += -mfpmath=sse -msse
 endif
 endif
 
-CFLAGS_APPEND := $(CFLAGS_APPEND) -DCFLAGS="\"$(CFLAGS_APPEND)\""
+CFLAGS_APPEND := $(CFLAGS_APPEND) -DCFLAGS="\"$(CFLAGS_APPEND)\"" -DLDFLAGS="\"$(LDFLAGS)\""
 
 DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
 CFLAGS_APPEND += -DDEBIAN_VERSION="\"$(DEBIAN_VERSION)\""
@@ -125,6 +127,7 @@ CFLAGS_APPEND += -DCXX_VERSION_LONG="\"$(CXX_VERSION_LONG)\""
 
 CXXFLAGS += $(CFLAGS_APPEND)
 $(info I: Extended CXXFLAGS: $(CXXFLAGS))
+$(info I:          LDFLAGS: $(LDFLAGS))
 
 
 ## Get upstream version from debian version.
@@ -140,6 +143,8 @@ APP_INFO_VERSION = 56
 	dh $@
 	
 override_dh_auto_build: 
+	#@echo Peforming with Makefile.linux.opencl
+	#$(MAKE) -f Makefile.linux.opencl release
 	@echo Building with gprof parameters and running example workflow
 	$(MAKE) profile
 	@echo Compiling with runtime parameters learned

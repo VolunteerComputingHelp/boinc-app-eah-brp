@@ -1,4 +1,11 @@
-boinc-app-eah-brp (0.20170426+dfsg-4) unstable; urgency=medium
+boinc-app-eah-brp (0.20170426+dfsg-5) unstable; urgency=medium
+
+  * Added -mfpmath=sse -msse for Intel builds found in 
+    upstream's build script.
+
+ -- Steffen Moeller <moeller@debian.org>  Sat, 23 Dec 2017 17:57:49 +0100
+
+boinc-app-eah-brp (0.20170426+dfsg-4) UNRELEASED; urgency=medium
 
   * Integrated -fuse-profile in build process.
 

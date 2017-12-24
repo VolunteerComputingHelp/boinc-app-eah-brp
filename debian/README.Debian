@@ -12,12 +12,6 @@ are identified in their regular scientific publications. Debian brings
 the science to many compute platforms that are not available to the
 E@H developers.
 
-The Binary Pulsar Search (BRP) is the computationally least demanding project
-of all projects that Einstein@Home runs.  To help the search the most,
-you leave BRP to the machines that have less than 4GB RAM and take more
-sophisticated computers to the more demanding projects - if your compute
-platform is officially supported.
-
 The secondary line of motivation is of exploratory nature. We would like
 to know what is going to happen when we bring scientific projects closer
 to a technically inclined community. Individuals with a strong interest
@@ -47,6 +41,7 @@ We are experimenting with the effects of wisdom files and link-time
 optimisation on the reproducibility of results across platforms. Until
 this is better understood, you may experience are a few more rejected
 work units than with the official clients that have used earlier compiler
-versions and earlier versions of the FFTW library.
+versions and earlier versions of the FFTW library. For best compatibility
+you may recompile and run in a Debian Jessie chroot environment.
 
  -- Steffen Moeller <moeller@debian.org>  Thu, 27 Apr 2017 21:52:08 +0200

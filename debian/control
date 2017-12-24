@@ -3,7 +3,9 @@ Section: science
 Priority: optional
 Maintainer: Debian BOINC Maintainers <pkg-boinc-devel@lists.alioth.debian.org>
 Uploaders: Steffen Moeller <moeller@debian.org>, Christian Dreihsig <christian.dreihsig@t-online.de>
-Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev|libgsl0-dev, binutils-dev,  libfftw3-dev, pkg-config
+Build-Depends: debhelper (>= 9), libboinc-app-dev, libxml2-dev, libiberty-dev, libgsl-dev|libgsl0-dev,
+ binutils-dev,  libfftw3-dev, pkg-config
+# libclfft-dev # for OpenCL version
 Standards-Version: 4.1.2
 Homepage: https://einsteinathome.org/
 Vcs-Git: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
@@ -11,7 +13,7 @@ Vcs-Browser: https://github.com/VolunteerComputingHelp/boinc-app-eah-brp.git
 
 Package: boinc-app-eah-brp
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, boinc-client, binutils
+Depends: ${shlibs:Depends}, ${misc:Depends}, boinc-client, binutils, binutils-dev
 Recommends: boinc-manager
 Suggests: boinc-app-seti
 Description: BOINC extension for Einstein@Home binary pulsar search
