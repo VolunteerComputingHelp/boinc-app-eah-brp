@@ -1,0 +1,29 @@
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -1461,7 +1461,10 @@ thrA[4] = 0.0;
+ 
+ #ifdef BOINCIFIED
+       // update work unit fraction done (counter is 0-indexed)
+-      erp_fraction_done((template_counter + 1.0) / template_total_amount);
++#ifdef COMMUNICATIONREDUCTION
++      if (0 == template_counter % COMMUNICATIONREDUCTION)
++#endif
++         erp_fraction_done((template_counter + 1.0) / template_total_amount);
+ #endif
+ 
+ #ifndef NOCHECKPOINTING
+Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
++++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -199,7 +199,7 @@ gzFile boinc_gzopen(const char* path, co
+   return gzdopen(fileno(fp), mode);
+ }
+ 
+-void erp_fraction_done(double frac) {
++void erp_fraction_done(const double frac) {
+   boinc_fraction_done((frac+pass)/passes);
+ }
+ 

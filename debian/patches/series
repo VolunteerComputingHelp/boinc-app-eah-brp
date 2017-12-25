@@ -18,3 +18,5 @@ show_import_of_wisdom.patch
 allow_profiling.patch
 show_LDFLAGS.patch
 compile_opencl_version.patch
+disable_checkpointing.patch
+progressfraction.patch

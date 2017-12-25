@@ -1,0 +1,230 @@
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -97,18 +97,24 @@ typedef struct
+   char *inputfile;                       // name of the input file
+   char *outputfile;                      // pointer to name of the output file
+   char *templatebank;                    // pointer to name of the template bank
++#ifndef NOCHECKPOINTING
+   char *checkpointfile;                  // pointer to name of the checkpoint file
++#endif
+   char *zaplistfile;                     // pointer to name of the zaplist file
+   char outputfile_tmp[FN_LENGTH + 4];    // name of the temporary output file
++#ifndef NOCHECKPOINTING
+   char checkpointfile_tmp[FN_LENGTH + 4];// name of the temporary checkpoint file
++#endif
+ } User_Variables;
+ 
+ // prototypes
+ int compare_structs_by_P(const void * const ptr1, const void * const ptr2);
+ int compare_structs_by_ifa(const void * const ptr1, const void * const ptr2);
++#ifndef NOCHECKPOINTING
+ int set_checkpoint(const User_Variables * const uvar,
+                    const CP_Header * const cp_head,
+                    const CP_cand * const candidates);
++#endif
+ 
+ 
+ /*+++++++++++++++++++++++++++++
+@@ -119,14 +125,20 @@ int MAIN (unsigned int argc, char *argv[
+   // structs
+   User_Variables uvar;                      // parameters specified in the command line
+   DD_Header data_head;                      // header of the dedispersed time series
++#ifndef NOCHECKPOINTING
+   CP_Header cp_head;                        // header of the checkpoint file
++#endif
+   t_pulsar_search search_params_tmp;        // for communication with screensaver
+ 
+   // candiate array
+   CP_cand *candidates_all = NULL;           // array of structs for all candidates
+ 
+   // file pointers
+-  FILE *output = NULL, *templatebank = NULL, *checkpoint = NULL;
++  FILE *output = NULL, *templatebank = NULL
++#ifndef NOCHECKPOINTING
++	  , *checkpoint = NULL
++#endif
++	  ;
+   gzFile input;
+ 
+   // pointers for time series variables and FFT plan.
+@@ -202,11 +214,15 @@ int MAIN (unsigned int argc, char *argv[
+   // set user variables to defaults
+   uvar.outputfile = NULL;
+   uvar.templatebank = NULL;
++#ifndef NOCHECKPOINTING
+   uvar.checkpointfile = NULL;
++#endif
+   uvar.inputfile = NULL;
+   uvar.zaplistfile = NULL;
+   sprintf(uvar.outputfile_tmp, "%s", "");
++#ifndef NOCHECKPOINTING
+   sprintf(uvar.checkpointfile_tmp, "%s", "");
++#endif
+   uvar.white = 0;
+   uvar.f0 = 250.0;
+   uvar.window = 1000;
+@@ -345,6 +361,9 @@ int MAIN (unsigned int argc, char *argv[
+ 	}
+      else if ((strcmp(argv[i], "-c") == 0) || (strcmp(argv[i], "--checkpoint_file") == 0))
+ 	{
++#ifdef NOCHECKPOINTING
++          logMessage(error, true, "Disabled checkpointing at compile time - '%s' option ignored\n", argv[i]);
++#else
+ 	  uvar.checkpointfile = argv[i+1];
+ 
+ 	  if(NULL == uvar.checkpointfile)
+@@ -360,6 +379,7 @@ int MAIN (unsigned int argc, char *argv[
+ 	      return(RADPUL_EFILE);
+ 	    }
+ 	  i += 2;
++#endif
+ 	}
+       else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "--template_bank") == 0))
+ 	{
+@@ -425,7 +445,9 @@ int MAIN (unsigned int argc, char *argv[
+ 	  printf(" -i, --input_file\t\tstring\tThe name of the input file.\n");
+ 	  printf(" -o, --output_file\t\tstring\tThe name of the candidate output file.\n");
+ 	  printf(" -t, --template_bank\t\tstring\tThe name of the random template bank.\n");
++#ifndef NOCHECKPOINTING
+ 	  printf(" -c, --checkpoint_file\t\tstring\tThe name of the checkpoint file.\n");
++#endif
+ 	  printf(" -l, --zaplist_file\t\tstring\tThe name of the zaplist file.\n");
+ 	  printf(" -f, --f0\t\t\tfloat\tThe maximum signal frequency (in Hz)\n");
+ 	  printf(" -A, --false_alarm\t\tfloat\tFalse alarm probability.\n");
+@@ -559,6 +581,7 @@ int MAIN (unsigned int argc, char *argv[
+ 
+   logMessage(debug, true, "Total amount of templates: %i\n", template_total_amount);
+ 
++#ifndef NOCHECKPOINTING
+   // open checkpoint input stream
+   logMessage(debug, true, "Opening checkpoint file: %s\n", uvar.checkpointfile);
+   checkpoint = fopen(uvar.checkpointfile,"rb");
+@@ -667,6 +690,7 @@ int MAIN (unsigned int argc, char *argv[
+ 	  template_counter = cp_head.n_template;
+ 	}
+     }
++#endif // NOCHECKPOINING
+ 
+ 
+   // open input stream
+@@ -1429,19 +1453,25 @@ thrA[4] = 0.0;
+       free(binned_spectrum);
+ 
+       template_counter++;
++#ifndef NOCHECKPOINTING
+       cp_head.n_template = template_counter;
++#endif
+ 
+       logMessage(debug, true, "Template done!\n");
+ 
+ #ifdef BOINCIFIED
+       // update work unit fraction done (counter is 0-indexed)
+       erp_fraction_done((template_counter + 1.0) / template_total_amount);
++#endif
++
++#ifndef NOCHECKPOINTING
+ 
++#ifdef BOINCIFIED
+       // only commit checkpoints if BOINC says so
+       if (boinc_time_to_checkpoint()) {
+ #endif
+-	// at the end of each template searched, write checkpoint file
+ 	logMessage(debug, false, "Committing checkpoint.\n");
++	// at the end of each template searched, write checkpoint file
+ 	result = set_checkpoint(&uvar, &cp_head, candidates_all);
+ 	if(result != 0) return(result);
+ 
+@@ -1449,7 +1479,11 @@ thrA[4] = 0.0;
+ 	  logMessage(info, true, "Checkpoint committed!\n");
+ 	  boinc_checkpoint_completed();
+       }
++#endif
++
++#endif	// NOCHECKPOINTING
+ 
++#ifdef BOINCIFIED
+       // time to check what's going on
+       boinc_get_status(&boinc_status);
+ 
+@@ -1512,9 +1546,11 @@ thrA[4] = 0.0;
+ 
+   // set final checkpoint to avoid recomputation (since last checkpoint) on application restart
+   logMessage(debug, true, "Search done!\n");
++#ifndef NOCHECKPOINTING
+   logMessage(debug, false, "Committing final checkpoint.\n");
+   result = set_checkpoint(&uvar, &cp_head, candidates_all);
+   if(result != 0) return(result);
++#endif
+ 
+   // compute the -log10() of the inverse false alarm rate for all candidates
+   for(unsigned int i = 0; i < N_CAND; i++)
+@@ -1755,6 +1791,7 @@ int compare_structs_by_ifa(const void *
+     }
+ }
+ 
++#ifndef NOCHECKPOINTING
+ // Write checkpoint
+ int set_checkpoint(const User_Variables * const uvar,
+                    const CP_Header * const cp_head,
+@@ -1797,6 +1834,7 @@ int set_checkpoint(const User_Variables
+   // success
+   return(0);
+ }
++#endif
+ 
+ 
+ #ifndef BOINCIFIED
+Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
++++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -251,7 +251,9 @@ static int worker(void)
+     vector<char*> input_file;
+     int output_files = 0;
+     vector<char*> output_file;
++#ifndef NOCHECKPOINTING
+     char* checkpoint_file=NULL;
++#endif
+ 
+     int result = 0;
+ 
+@@ -267,7 +269,9 @@ static int worker(void)
+                 { "input-file",         required_argument,  0, 'i' },
+                 { "template-bank-file", required_argument,  0, 't' },
+                 { "output-file",        required_argument,  0, 'o' },
++#ifndef NOCHECKPOINTING
+                 { "checkpoint-file",    required_argument,  0, 'c' },
++#endif
+                 { "zaplist-file",       required_argument,  0, 'l' },
+                 { "f0",                 required_argument,  0, 'f' },
+                 { "false-alarm",        required_argument,  0, 'A' },
+@@ -315,11 +319,15 @@ static int worker(void)
+                 break;
+ 
+             case 'c':
++#ifdef NOCHECKPOINTING
++                logMessage(info, true, "Disabled Checkpointing at compile time, ignored -c option.\n");
++#else
+                 checkpoint_file=optarg;
+                 handle_option(forward_argv, forward_argc, "-c");
+                 handle_option_file_value(forward_argv, forward_argc, optarg);
+                 logMessage(debug, true, "Checkpoint file: '%s'\n", optarg);
+                 logMessage(debug, false, "Resolved checkpoint file: '%s'\n", forward_argv.at(forward_argc-1));
++#endif
+                 break;
+ 
+             case 'l':
+@@ -464,9 +472,11 @@ static int worker(void)
+           break;
+         } else {
+           logMessage(debug, true, "Demodulation successful!\n");
++#ifndef NOCHECKPOINTING
+           /* prepare for the next pass */
+           if(checkpoint_file)
+             unlink(checkpoint_file);
++#endif
+         }
+       }
+ 
