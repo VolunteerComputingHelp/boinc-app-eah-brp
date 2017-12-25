@@ -43,6 +43,7 @@ $(info LDFLAGS: $(LDFLAGS))
 
 export EINSTEIN_RADIO_SRC := $(CURDIR)
 export EINSTEINBINARY_TARGET = einsteinbinary_BRP4
+export EINSTEINBINARY_TARGET_OPENCL = einsteinbinary_BRP4_opencl
 
 # Uncomment this to enable compilation with UltraSPARC specific compiler
 # flags. This will most probably increase the application's performance or if
@@ -146,8 +147,8 @@ APP_INFO_VERSION = 56
 	dh $@
 	
 override_dh_auto_build: 
-	#@echo Peforming with Makefile.linux.opencl
-	#$(MAKE) -f Makefile.linux.opencl release
+	@echo Peforming with Makefile.linux.opencl
+	$(MAKE) EINSTEINBINARY_TARGET=$(EINSTEINBINARY_TARGET_OPENCL) -f Makefile.linux.opencl release
 	@echo Building with gprof parameters and running example workflow
 	$(MAKE) profile
 	@echo Compiling with runtime parameters learned
@@ -161,8 +162,8 @@ override_dh_install:
 override_dh_auto_clean:
 	make clean || echo "I: Make clean fails with no patches applied - please ignore"
 	dh_clean stderr.old stderr.txt boinc_EinsteinRadio_0 boinc_EinsteinRadio_0 boinc_finish_called
-	dh_clean einsteinbinary einsteinbinary_BRP4 
-	dh_clean results_profile.cand *.gcda
+	dh_clean einsteinbinary einsteinbinary_BRP4* einsteinbinary_opencl*
+	dh_clean results_profile.cand *.gcda *.o boinc_EinsteinRadio_0 boinc_finish_called
 	dh_clean debian/extra/einstein_bench/boinc_EinsteinRadio_0 \
 	         debian/extra/einstein_bench/boinc_finish_called \
 	         debian/extra/einstein_bench/stderr.txt \

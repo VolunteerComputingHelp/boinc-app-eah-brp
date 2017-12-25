@@ -93,14 +93,23 @@ Index: boinc-app-eah-brp/demod_binary.c
  	  printf(" -l, --zaplist_file\t\tstring\tThe name of the zaplist file.\n");
  	  printf(" -f, --f0\t\t\tfloat\tThe maximum signal frequency (in Hz)\n");
  	  printf(" -A, --false_alarm\t\tfloat\tFalse alarm probability.\n");
-@@ -559,6 +581,7 @@ int MAIN (unsigned int argc, char *argv[
+@@ -559,6 +581,8 @@ int MAIN (unsigned int argc, char *argv[
  
    logMessage(debug, true, "Total amount of templates: %i\n", template_total_amount);
  
++  template_counter = 0;
 +#ifndef NOCHECKPOINTING
    // open checkpoint input stream
    logMessage(debug, true, "Opening checkpoint file: %s\n", uvar.checkpointfile);
    checkpoint = fopen(uvar.checkpointfile,"rb");
+@@ -566,7 +590,6 @@ int MAIN (unsigned int argc, char *argv[
+     {
+       logMessage(info, true, "Checkpoint file unavailable: %s (%s).\n", uvar.checkpointfile, strerror(errno));
+       logMessage(info, false, "Starting from scratch...\n");
+-      template_counter = 0;
+       int sprintfret;
+       if((sprintfret = snprintf(cp_head.originalfile, sizeof(cp_head.originalfile), "%s", uvar.inputfile)) < 0 || (((unsigned int)sprintfret) >= sizeof(cp_head.originalfile)))
+ 	{
 @@ -667,6 +690,7 @@ int MAIN (unsigned int argc, char *argv[
  	  template_counter = cp_head.n_template;
  	}
