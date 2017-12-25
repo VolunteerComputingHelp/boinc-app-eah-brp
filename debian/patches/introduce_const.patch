@@ -1,0 +1,144 @@
+Index: boinc-app-eah-brp/erp_utilities.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_utilities.cpp
++++ boinc-app-eah-brp/erp_utilities.cpp
+@@ -42,18 +42,18 @@ extern const ERP_LOGLEVEL c_loglevel = L
+ extern const ERP_LOGLEVEL c_loglevel = debug;
+ #endif
+ 
+-float sinSamples[] = {0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923880f, 0.956940f, 0.980785f, 0.995185f, 1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195091f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290284f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831469f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634394f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195091f, -0.098017f, -0.000000f};
+-float cosSamples[] = {1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195090f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290285f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831470f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634393f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195090f, -0.098017f, 0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923879f, 0.956940f, 0.980785f, 0.995185f, 1.000000f};
++const float sinSamples[] = {0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923880f, 0.956940f, 0.980785f, 0.995185f, 1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195091f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290284f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831469f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634394f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195091f, -0.098017f, -0.000000f};
++const float cosSamples[] = {1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195090f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290285f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831470f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634393f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195090f, -0.098017f, 0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923879f, 0.956940f, 0.980785f, 0.995185f, 1.000000f};
+ 
+ 
+ int check_byte_order()
+ {
+-    uint16_t word = 0x0001;
+-    uint8_t* byte = (uint8_t*) &word;
++    const uint16_t word = 0x0001;
++    const uint8_t* const byte = (const uint8_t*) &word;
+     return(byte[0] ? ERP_LITTLE_ENDIAN : ERP_BIG_ENDIAN);
+ }
+ 
+-void endian_swap(uint8_t* pdata, size_t dsize, size_t nelements)
++void endian_swap(uint8_t* pdata, const size_t dsize, const size_t nelements)
+ {
+     size_t i, j, indx;
+     uint8_t tempbyte;
+@@ -144,11 +144,12 @@ void logMessage(const ERP_LOGLEVEL logLe
+     va_end(varargs);
+ }
+ 
+-void sincosLUTInitialize(float **sinLUT, float **cosLUT)
++void sincosLUTInitialize(const float **const sinLUT, const float **const cosLUT)
+ {
+     // old unsused code, we're already initialized (hence the fixed "true")
+     static bool initialized = true;
+ 
++#if 0
+     if(!initialized) {
+         unsigned int i;
+         for (i=0; i <= ERP_SINCOS_LUT_RES; ++i) {
+@@ -168,12 +169,13 @@ void sincosLUTInitialize(float **sinLUT,
+             }
+         */
+     }
++#endif
+ 
+     *sinLUT = sinSamples;
+     *cosLUT = cosSamples;
+ }
+ 
+-extern bool sincosLUTLookup(float x, float *sinX, float *cosX)
++extern bool sincosLUTLookup(const float x, float *const sinX, float *const cosX)
+ {
+     float xt;
+     int i0;
+@@ -213,9 +215,9 @@ int resolveFilename(const char *logical,
+     return boinc_resolve_filename(logical, physical, maxLength);
+ }
+ 
+-int dumpFloatBufferToTextFile(const float *buffer,
++int dumpFloatBufferToTextFile(const float *const buffer,
+                               const size_t size,
+-                              const char  *filename)
++                              const char* const filename)
+ {
+     FILE *output = fopen(filename, "w");
+     if(NULL == output) {
+@@ -232,7 +234,7 @@ int dumpFloatBufferToTextFile(const floa
+     return(0);
+ }
+ 
+-int findNextPowerofTwo(int value)
++int findNextPowerofTwo(const int value)
+ {
+     // sanity check (no negative values allowed)
+     if(value < 0) {
+Index: boinc-app-eah-brp/erp_utilities.h
+===================================================================
+--- boinc-app-eah-brp.orig/erp_utilities.h
++++ boinc-app-eah-brp/erp_utilities.h
+@@ -51,14 +51,14 @@ extern "C" {
+     extern void endian_swap(uint8_t* pdata, const size_t dsize, const size_t nelements);
+     extern void logMessage(const ERP_LOGLEVEL logLevel, const bool showLevel, const char* msg, ...);
+ 
+-    extern void sincosLUTInitialize(float **sinLUT, float **cosLUT);
+-    extern bool sincosLUTLookup(float x, float *sinX, float *cosX);
++    extern void sincosLUTInitialize(const float ** const sinLUT, const float ** const cosLUT);
++    extern bool sincosLUTLookup(const float x, float *const sinX, float *const cosX);
+ 
+     extern int resolveFilename(const char *logical, char *physical, int maxLength);
+ 
+-    extern int dumpFloatBufferToTextFile(const float *buffer, const size_t size, const char *filename);
++    extern int dumpFloatBufferToTextFile(const float *const buffer, const size_t size, const char* const filename);
+ 
+-    extern int findNextPowerofTwo(int value);
++    extern int findNextPowerofTwo(const int value);
+ 
+ #ifdef  __cplusplus
+ }
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -155,8 +155,8 @@ int MAIN (unsigned int argc, char *argv[
+   unsigned int dirty_page_count;            // counts sumspec pages marked dirty (for logging only)
+   unsigned int fft_size;                    // size of the FFT
+   DIfloatPtr powerspectrum ;                // power spectrum of the resampled time series
+-  float *sinLUTsamples = NULL;              // sin/cos LUT samples
+-  float *cosLUTsamples = NULL;              // sin/cos LUT samples
++  const float *sinLUTsamples = NULL;        // sin/cos LUT samples
++  const float *cosLUTsamples = NULL;        // sin/cos LUT samples
+ 
+   unsigned int window_2;                    // half the size of the running median window
+   unsigned int fundamental_idx_hi;          // frequency bin of the highest fundamental frequency searched for
+Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.c
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.c
+@@ -36,8 +36,8 @@
+ float *del_t = NULL;
+ 
+ 
+-int set_up_resampling(DIfloatPtr input_dip, DIfloatPtr *output_dip, const RESAMP_PARAMS *const params, float *sinLUTsamples, 
+-float *cosLUTsamples)
++int set_up_resampling(DIfloatPtr input_dip, DIfloatPtr *output_dip, const RESAMP_PARAMS *const params, const float *sinLUTsamples,
++const float *cosLUTsamples)
+ {
+     //float * input = input_dip.host_ptr;
+     float ** output = & (output_dip->host_ptr);
+Index: boinc-app-eah-brp/demod_binary_resamp_cpu.h
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.h
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.h
+@@ -34,7 +34,7 @@
+ extern "C" {
+ #endif
+ 
+-extern int set_up_resampling(DIfloatPtr input, DIfloatPtr *output, const RESAMP_PARAMS *const params, float *sinLUTsamples, float *cosLUTsamples);
++extern int set_up_resampling(DIfloatPtr input, DIfloatPtr *output, const RESAMP_PARAMS *const params, const float *sinLUTsamples, const float *cosLUTsamples);
+ extern int run_resampling(DIfloatPtr input, DIfloatPtr output, const RESAMP_PARAMS *const params);
+ extern int tear_down_resampling(DIfloatPtr output);
+ 

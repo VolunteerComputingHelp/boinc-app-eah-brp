@@ -27,3 +27,16 @@ Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
    boinc_fraction_done((frac+pass)/passes);
  }
  
+Index: boinc-app-eah-brp/erp_boinc_ipc.h
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_ipc.h
++++ boinc-app-eah-brp/erp_boinc_ipc.h
+@@ -53,7 +53,7 @@ extern "C" {
+ 
+     extern void erp_boinc_init(void);
+ 
+-    extern void erp_fraction_done(double);
++    extern void erp_fraction_done(const double);
+ #ifdef __cplusplus
+ }
+ #endif

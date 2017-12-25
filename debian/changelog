@@ -1,6 +1,7 @@
 boinc-app-eah-brp (0.20170426+dfsg-6) unstable; urgency=medium
 
   * No checkpointing for Intel platforms
+  * Reduced frequency of communication between BOINC client and application
 
  -- Steffen Moeller <moeller@debian.org>  Sun, 24 Dec 2017 02:06:00 +0100
 
