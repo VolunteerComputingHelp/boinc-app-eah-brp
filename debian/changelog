@@ -1,3 +1,14 @@
+boinc-app-eah-brp (0.20170426+dfsg-8) UNRELEASED; urgency=medium
+
+  * Explicitly setting -c11 to (possibly) avoid Ubuntu UChar error
+  * Falling back to regular g++ binary if explicit g++-5 not available
+  * Added link-time-optimisation for g++ 5 and higher (needs revision)
+  * Uncomment Package declaration in debian/control to compile
+    boinc-app-eah-brp-opencl package.
+  * Bumped standard to 4.1.3
+
+ -- Steffen Moeller <moeller@debian.org>  Tue, 02 Jan 2018 19:35:36 +0100
+
 boinc-app-eah-brp (0.20170426+dfsg-7) unstable; urgency=medium
 
   * Depend on g++5 for better compatibility with 4.9-built upstream

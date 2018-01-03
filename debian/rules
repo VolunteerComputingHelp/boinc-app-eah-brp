@@ -70,7 +70,19 @@ export EINSTEINBINARY_TARGET_OPENCL = einsteinbinary_BRP4_opencl
 #  DEB_CONFIGURE_EXTRA_FLAGS += --enable-bitness=64
 #endif
 
+CFLAGS_APPEND += -std=c++11 # because of UChar, may not be implicitly set for earlier compiler verions
 CFLAGS_APPEND += $(CPPFLAGS)
+
+
+ifeq (g++-5,$(CXX))
+WHICH_GPP5 := $(shell which g++-5)
+ifeq (,$(WHICH_GPP5))
+$(info default g++-5 not available, falling back to g++)
+CXX=g++
+CC=gcc
+CPP=cpp
+endif
+endif
 
 
 
@@ -100,6 +112,7 @@ LOCALOPTIMISATION="yes"
 endif
 endif
 
+
 #CFLAGS_APPEND += -O3
 #CFLAGS_APPEND += -fomit-frame-pointer
 
@@ -121,6 +134,11 @@ ifeq ($(DEB_TARGET_GNU_CPU),x86_64)
 endif
 endif
 
+ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [5678]\.[0-9]\.[0-9]"))
+$(info I: Enabled link-time optimisation for g++ >= 5)
+CXXFLAGS_APPEND += -flto
+endif
+
 CFLAGS_APPEND := $(CFLAGS_APPEND) -DCFLAGS="\"$(CFLAGS_APPEND)\"" -DLDFLAGS="\"$(LDFLAGS)\""
 
 DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
@@ -136,6 +154,11 @@ CXXFLAGS += $(CFLAGS_APPEND)
 $(info I: Extended CXXFLAGS: $(CXXFLAGS))
 $(info I:          LDFLAGS: $(LDFLAGS))
 
+ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [567]\.[0-9]\.[0-9]"))
+# Completing LTO
+LDFLAGS += $(CXXFLAGS_APPEND)
+endif
+
 
 ## Get upstream version from debian version.
 #UPSTREAM_VERSION = $(shell dpkg-parsechangelog | egrep '^Version:' | \
@@ -150,8 +173,10 @@ APP_INFO_VERSION = 56
 	dh $@
 	
 override_dh_auto_build: 
+ifeq (1,$(shell grep -c "^Package: boinc-app-eah-brp-opencl" debian/control))
 	@echo Peforming with Makefile.linux.opencl
 	$(MAKE) EINSTEINBINARY_TARGET=$(EINSTEINBINARY_TARGET_OPENCL) -f Makefile.linux.opencl release
+endif
 	@echo Building with gprof parameters and running example workflow
 	$(MAKE) profile
 	@echo Compiling with runtime parameters learned
