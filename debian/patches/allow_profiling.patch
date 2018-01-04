@@ -22,7 +22,7 @@ Index: boinc-app-eah-brp/Makefile
  	rm -f *.gcda
  	@echo "Gathering profiling data (this takes roughly one minute)..."
 -	./$(TARGET) -t $(EINSTEIN_RADIO_SRC)/../test/templates_400Hz_2_short.bank -l $(EINSTEIN_RADIO_SRC)/data/zaplist_232.txt -A 0.04 -P 3.0 -W -z -i $(EINSTEIN_RADIO_SRC)/../test/J1907+0740_dm_482.binary -c status_profile.cpt -o results_profile.cand
-+	./$(TARGET) -t $(WUbank).50 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand
++	time ./$(TARGET) -t $(WUbank).50 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand
  	@echo "Finished gathering profiling data..."
  
  $(TARGET): $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_boinc_wrapper.cpp $(OBJS)

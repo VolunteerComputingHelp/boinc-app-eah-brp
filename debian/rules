@@ -136,28 +136,34 @@ endif
 
 ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [5678]\.[0-9]\.[0-9]"))
 $(info I: Enabled link-time optimisation for g++ >= 5)
-CXXFLAGS_APPEND += -flto
+CFLAGS_APPEND += -flto
 endif
-
-CFLAGS_APPEND := $(CFLAGS_APPEND) -DCFLAGS="\"$(CFLAGS_APPEND)\"" -DLDFLAGS="\"$(LDFLAGS)\""
-
-DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
-CFLAGS_APPEND += -DDEBIAN_VERSION="\"$(DEBIAN_VERSION)\""
-CFLAGS_APPEND += -DDEB_TARGET_ARCH_OS="\"$(DEB_TARGET_ARCH_OS)\""
-CFLAGS_APPEND += -DDEB_TARGET_GNU_CPU="\"$(DEB_TARGET_GNU_CPU)\""
-CFLAGS_APPEND += -DCXX_VERSION_LONG="\"$(CXX_VERSION_LONG)\""
 
 CFLAGS_APPEND += -DNOCHECKPOINTING
-CFLAGS_APPEND += -DCOMMUNICATIONREDUCTION=250 # 250fold, effectively every 2 minutes
 
+# 250fold reduction of progress communication, effectively every 2 minutes
+CFLAGS_APPEND += -DCOMMUNICATIONREDUCTION=250
+
+
+DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
 CXXFLAGS += $(CFLAGS_APPEND)
+
+CXXFLAGS += -DCXXFLAGS="\"$(echo $(CFLAGS_APPEND)| sed -e 's/[\\"\(\)]//g')\""
+
+CXXFLAGS += -DDEBIAN_VERSION="\"$(DEBIAN_VERSION)\""
+CXXFLAGS += -DDEB_TARGET_ARCH_OS="\"$(DEB_TARGET_ARCH_OS)\""
+CXXFLAGS += -DDEB_TARGET_GNU_CPU="\"$(DEB_TARGET_GNU_CPU)\""
+CXXFLAGS += -DCXX_VERSION_LONG="\"$(CXX_VERSION_LONG)\""
+
+
+ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [5678]\.[0-9]\.[0-9]"))
+# Completing LTO
+LDFLAGS += $(CFLAGS_APPEND)
+endif
+CXXFLAGS += -DLDFLAGS="\"$(shell echo $(LDFLAGS)|sed -r 's/[\\"\(\)]//g')\""
+
 $(info I: Extended CXXFLAGS: $(CXXFLAGS))
 $(info I:          LDFLAGS: $(LDFLAGS))
-
-ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [567]\.[0-9]\.[0-9]"))
-# Completing LTO
-LDFLAGS += $(CXXFLAGS_APPEND)
-endif
 
 
 ## Get upstream version from debian version.

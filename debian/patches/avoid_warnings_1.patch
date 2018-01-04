@@ -2,6 +2,24 @@ Index: boinc-app-eah-brp/hs_common.c
 ===================================================================
 --- boinc-app-eah-brp.orig/hs_common.c
 +++ boinc-app-eah-brp/hs_common.c
+@@ -30,13 +30,13 @@
+ 
+ extern "C" {
+ 
+-int harmonic_summing(float ** sumspec,
+-                     int32_t ** dirty,
+-                     const float * powerspectrum,
++int harmonic_summing(float ** const sumspec,
++                     int32_t ** const dirty,
++                     const float * const powerspectrum,
+                      unsigned int window_2,
+                      unsigned int fundamental_idx_hi,
+                      unsigned int harmonic_idx_hi,
+-                     float * thr) {	
++                     const float * const thr) {	
+ 
+       // loop over frequency bins and maximize the summed power at each bin for each number of summed harmonics
+       // Semantics of "dirty" array:
 @@ -54,14 +54,14 @@ int harmonic_summing(float ** sumspec,
  
        unsigned int i,l;

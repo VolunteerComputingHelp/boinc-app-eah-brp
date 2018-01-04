@@ -1,6 +1,12 @@
+boinc-app-eah-brp (0.20170426+dfsg-9) UNRELEASED; urgency=medium
+
+  * Fixes to link-time optimisation.
+
+ -- Steffen Moeller <moeller@debian.org>  Thu, 04 Jan 2018 22:14:11 +0100
+
 boinc-app-eah-brp (0.20170426+dfsg-8) UNRELEASED; urgency=medium
 
-  * Explicitly setting -c11 to (possibly) avoid Ubuntu UChar error
+  * Explicitly setting -std=c++11 to (possibly) avoid Ubuntu UChar error
   * Falling back to regular g++ binary if explicit g++-5 not available
   * Added link-time-optimisation for g++ 5 and higher (needs revision)
   * Uncomment Package declaration in debian/control to compile

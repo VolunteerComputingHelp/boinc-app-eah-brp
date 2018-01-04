@@ -121,7 +121,7 @@ Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
  
 -int set_up_resampling(DIfloatPtr input_dip, DIfloatPtr *output_dip, const RESAMP_PARAMS *const params, float *sinLUTsamples, 
 -float *cosLUTsamples)
-+int set_up_resampling(DIfloatPtr input_dip, DIfloatPtr* const output_dip, const RESAMP_PARAMS *const params, const float* const ignoreA, const float *const ignoreB)
++int set_up_resampling(const DIfloatPtr input_dip, DIfloatPtr* const output_dip, const RESAMP_PARAMS *const params, const float* const ignoreA, const float *const ignoreB)
  {
      //float * input = input_dip.host_ptr;
      float ** output = & (output_dip->host_ptr);
@@ -134,6 +134,27 @@ Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
      // allocate memory for time offsets in modulated time
  #ifndef BRP_FFT_INPLACE
      del_t = (float *) calloc(params->nsamples_unpadded, sizeof(float));
+@@ -77,9 +71,9 @@ float *cosLUTsamples)
+ }
+ 
+ 
+-int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS *const params)
++int run_resampling(const DIfloatPtr input_dip, DIfloatPtr const output_dip, const RESAMP_PARAMS *const params)
+ {
+-    float * input  = input_dip.host_ptr;
++    const float * input  = input_dip.host_ptr;
+     float * output = output_dip.host_ptr;
+     
+     unsigned int i;
+@@ -136,7 +130,7 @@ int run_resampling(DIfloatPtr input_dip,
+ }
+ 
+ 
+-int tear_down_resampling(DIfloatPtr output)
++int tear_down_resampling(DIfloatPtr const output)
+ {
+ #ifndef BRP_FFT_INPLACE
+     free(del_t);
 Index: boinc-app-eah-brp/demod_binary_resamp_cpu.h
 ===================================================================
 --- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.h
@@ -173,3 +194,269 @@ Index: boinc-app-eah-brp/opencl/app/demod_binary_ocl.h
  extern int run_resampling(DIfloatPtr input, DIfloatPtr output, const RESAMP_PARAMS *const params);
  extern int tear_down_resampling(DIfloatPtr output);
  
+Index: boinc-app-eah-brp/home/moeller/github/boinc-app-eah-brp/demod_binary_hs_cpu.h
+===================================================================
+--- boinc-app-eah-brp.orig/home/moeller/github/boinc-app-eah-brp/demod_binary_hs_cpu.h
++++ /dev/null
+@@ -1,68 +0,0 @@
+-/***************************************************************************
+- *   Copyright (C) 2010 by Oliver Bock                                     *
+- *   oliver.bock[AT]aei.mpg.de                                             *
+- *   Copyright (C) 2010 by Heinz-Bernd Eggenstein                          *
+- *                                                                         *
+- *   This file is part of Einstein@Home (Radio Pulsar Edition).            *
+- *                                                                         *
+- *   Description:                                                          *
+- *   Performs harmonic summing (2nd  ...16th harmonic) of powerspectrum    *
+- *   CPU variant.                                                          *
+- *                                                                         *
+- *   Einstein@Home is free software: you can redistribute it and/or modify *
+- *   it under the terms of the GNU General Public License as published     *
+- *   by the Free Software Foundation, version 2 of the License.            *
+- *                                                                         *
+- *   Einstein@Home is distributed in the hope that it will be useful,      *
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          *
+- *   GNU General Public License for more details.                          *
+- *                                                                         *
+- *   You should have received a copy of the GNU General Public License     *
+- *   along with Einstein@Home. If not, see <http://www.gnu.org/licenses/>. *
+- *                                                                         *
+- ***************************************************************************/
+-
+-#ifndef DEMOD_BINARY_HS_CPU_H
+-#define DEMOD_BINARY_HS_CPU_H
+-
+-#include <stdint.h>
+-
+-#include "diptr.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-extern int set_up_harmonic_summing(float ** sumspec,
+-                                   int32_t ** dirty,
+-                                   unsigned int * nr_pages_ptr, 
+-                                   unsigned int fundamental_idx_hi,
+-                                   unsigned int harmonic_idx_hi);
+-
+-extern int harmonic_summing(float ** sumspec,
+-                     int32_t ** dirtyFlags,
+-                     const float * powerspectrum,
+-                     unsigned int window_2,
+-                     unsigned int fundamental_idx_hi,
+-                     unsigned int harmonic_idx_hi,
+-                     float * thr);
+-
+-extern int run_harmonic_summing(float **sumspec, 
+-                                int32_t ** dirty_flags, 
+-                                unsigned int nr_pages,
+-                                DIfloatPtr powerspectrum, 
+-                                unsigned int window_2, 
+-                                unsigned int fundamental_idx_hi,
+-                                unsigned int harmonic_idx_hi, 
+-                                float *thresholds);
+-
+-extern int tear_down_harmonic_summing(float ** sumspec, 
+-                                      int32_t ** dirty);
+-
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif
+Index: boinc-app-eah-brp/exchndl32.c
+===================================================================
+--- boinc-app-eah-brp.orig/exchndl32.c
++++ boinc-app-eah-brp/exchndl32.c
+@@ -37,7 +37,7 @@
+ static LPTOP_LEVEL_EXCEPTION_FILTER prevExceptionFilter = NULL;
+ 
+ static
+-int __cdecl rprintf(const TCHAR * format, ...)
++int __cdecl rprintf(const TCHAR * const format, ...)
+ {
+     TCHAR szBuff[4096];
+     int retValue;
+@@ -71,7 +71,7 @@ DWORD GetModuleBase(DWORD dwAddress)
+ 
+ // Read in the symbol table.
+ static bfd_boolean
+-slurp_symtab (bfd *abfd, asymbol ***syms, long *symcount)
++slurp_symtab (bfd * const abfd, asymbol *** const syms, long * const symcount)
+ {
+     long storage;
+ 
+@@ -104,9 +104,9 @@ struct find_handle
+ };
+ 
+ // Look for an address in a section.  This is called via  bfd_map_over_sections.
+-static void find_address_in_section (bfd *abfd, asection *section, PTR data)
++static void find_address_in_section (bfd *const abfd, asection * const section, PTR const data)
+ {
+-    struct find_handle *info = (struct find_handle *) data;
++    struct find_handle * const info = (struct find_handle *) data;
+     bfd_vma vma;
+     bfd_size_type size;
+ 
+@@ -129,7 +129,7 @@ static void find_address_in_section (bfd
+ }
+ 
+ static
+-BOOL BfdDemangleSymName(LPCTSTR lpName, LPTSTR lpDemangledName, DWORD nSize)
++BOOL BfdDemangleSymName(const LPCTSTR const lpName, LPTSTR const lpDemangledName, const DWORD nSize)
+ {
+     char *res;
+ 
+@@ -149,7 +149,7 @@ BOOL BfdDemangleSymName(LPCTSTR lpName,
+ }
+ 
+ static
+-BOOL BfdGetSymFromAddr(bfd *abfd, asymbol **syms, long symcount, DWORD dwAddress, LPTSTR lpSymName, DWORD nSize)
++BOOL BfdGetSymFromAddr(bfd * const abfd, asymbol ** const syms, const long symcount, const DWORD dwAddress, LPTSTR const lpSymName, const DWORD nSize)
+ {
+     HMODULE hModule;
+     struct find_handle info;
+@@ -179,7 +179,7 @@ BOOL BfdGetSymFromAddr(bfd *abfd, asymbo
+ }
+ 
+ static
+-BOOL BfdGetLineFromAddr(bfd *abfd, asymbol **syms, long symcount, DWORD dwAddress,  LPTSTR lpFileName, DWORD nSize, LPDWORD lpLineNumber)
++BOOL BfdGetLineFromAddr(bfd * const abfd, asymbol ** const syms, const long symcount, const DWORD dwAddress,  const LPTSTR const lpFileName, const DWORD nSize, LPDWORD const lpLineNumber)
+ {
+     HMODULE hModule;
+     struct find_handle info;
+Index: boinc-app-eah-brp/demod_binary_hs_cpu.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_hs_cpu.c
++++ boinc-app-eah-brp/demod_binary_hs_cpu.c
+@@ -31,7 +31,8 @@
+ #include "demod_binary.h"
+ 
+ 
+-int set_up_harmonic_summing(float **sumspec,int32_t ** dirty,unsigned int * nr_pages_ptr,unsigned int fundamental_idx_hi, unsigned int harmonic_idx_hi)
++int set_up_harmonic_summing(float ** const sumspec,int32_t ** const dirty, unsigned int * const nr_pages_ptr,
++                            const unsigned int fundamental_idx_hi, const unsigned int harmonic_idx_hi)
+ {
+     int i;
+     unsigned int nr_pages = (fundamental_idx_hi >> LOG_PS_PAGE_SIZE ) +1;
+@@ -59,9 +60,9 @@ int set_up_harmonic_summing(float **sums
+ }
+ 
+ 
+-int run_harmonic_summing(float **sumspec, int32_t ** dirty_flags, unsigned int nr_pages,
+-                         DIfloatPtr powerspectrum_dip, unsigned int window_2, unsigned int fundamental_idx_hi,
+-                         unsigned int harmonic_idx_hi, float *thresholds)
++int run_harmonic_summing(float ** const sumspec, int32_t ** const dirty_flags, const unsigned int nr_pages,
++                         DIfloatPtr const powerspectrum_dip, const unsigned int window_2, const unsigned int fundamental_idx_hi,
++                         const unsigned int harmonic_idx_hi, const float * const thresholds)
+ {
+     int result,i;
+     float * powerspectrum =  powerspectrum_dip.host_ptr; 
+@@ -85,7 +86,7 @@ int run_harmonic_summing(float **sumspec
+     return result;
+ }
+ 
+-int tear_down_harmonic_summing(float **sumspec, int32_t ** dirty)
++int tear_down_harmonic_summing(float ** const sumspec, int32_t ** const dirty)
+ {
+     int i;
+ 
+Index: boinc-app-eah-brp/demod_binary_hs_cpu.h
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_hs_cpu.h
++++ boinc-app-eah-brp/demod_binary_hs_cpu.h
+@@ -34,31 +34,31 @@
+ extern "C" {
+ #endif
+ 
+-extern int set_up_harmonic_summing(float ** sumspec,
+-                                   int32_t ** dirty,
+-                                   unsigned int * nr_pages_ptr, 
+-                                   unsigned int fundamental_idx_hi,
+-                                   unsigned int harmonic_idx_hi);
+-
+-extern int harmonic_summing(float ** sumspec,
+-                     int32_t ** dirtyFlags,
+-                     const float * powerspectrum,
++extern int set_up_harmonic_summing(float ** const sumspec,
++                                   int32_t ** const dirty,
++                                   unsigned int * const nr_pages_ptr,
++                                   const unsigned int fundamental_idx_hi,
++                                   const unsigned int harmonic_idx_hi);
++
++extern int harmonic_summing(float ** const sumspec,
++                     int32_t ** const dirtyFlags,
++                     const float * const powerspectrum,
+                      unsigned int window_2,
+                      unsigned int fundamental_idx_hi,
+                      unsigned int harmonic_idx_hi,
+-                     float * thr);
++                     const float * const thr);
+ 
+ extern int run_harmonic_summing(float **sumspec, 
+                                 int32_t ** dirty_flags, 
+-                                unsigned int nr_pages,
++                                const unsigned int nr_pages,
+                                 DIfloatPtr powerspectrum, 
+                                 unsigned int window_2, 
+-                                unsigned int fundamental_idx_hi,
+-                                unsigned int harmonic_idx_hi, 
+-                                float *thresholds);
++                                const unsigned int fundamental_idx_hi,
++                                const unsigned int harmonic_idx_hi,
++                                const float * const thresholds);
+ 
+-extern int tear_down_harmonic_summing(float ** sumspec, 
+-                                      int32_t ** dirty);
++extern int tear_down_harmonic_summing(float ** const sumspec,
++                                      int32_t ** const dirty);
+ 
+ 
+ #ifdef __cplusplus
+Index: boinc-app-eah-brp/rngmed.c
+===================================================================
+--- boinc-app-eah-brp.orig/rngmed.c
++++ boinc-app-eah-brp/rngmed.c
+@@ -23,7 +23,7 @@
+ 
+ 
+ /*Used in running qsort*/
+-static int rngmed_qsortindex(const void *elem1, const void *elem2)
++static int rngmed_qsortindex(const void *const elem1, const void *const elem2)
+ {
+   struct qsnode
+   {
+@@ -45,7 +45,7 @@ static int rngmed_qsortindex(const void
+ }
+ 
+ 
+-void rngmed(const float *input, const unsigned int length, const unsigned int bsize, float *medians)
++void rngmed(const float *const input, const unsigned int length, const unsigned int bsize, float *const medians)
+ {
+   /* a single "node"
+      lesser  points to the next node with less or equal value
+Index: boinc-app-eah-brp/hs_common.h
+===================================================================
+--- boinc-app-eah-brp.orig/hs_common.h
++++ boinc-app-eah-brp/hs_common.h
+@@ -41,13 +41,13 @@ extern "C" {
+ static const int h_lut[16] = {4,3,2,2,2,  1, 1, 1, 1 , 1, 1, 1     ,-1,   3,2,1};
+ static const int k_lut[16] = {0,4,2,6,10, 1, 3, 5, 7 , 9,11,13     ,-1,   0,2,3};
+ 
+-int harmonic_summing(float ** sumspec,
+-                     int32_t ** dirtyFlags,
+-                     const float * powerspectrum,
++int harmonic_summing(float ** const sumspec,
++                     int32_t ** const dirtyFlags,
++                     const float * const powerspectrum,
+                      unsigned int window_2,
+                      unsigned int fundamental_idx_hi,
+                      unsigned int harmonic_idx_hi,
+-                     float * thr);
++                     const float * const thr);
+ 
+ 
+ }

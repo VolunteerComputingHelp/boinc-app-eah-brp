@@ -7,7 +7,7 @@ Index: boinc-app-eah-brp/demod_binary.c
    logMessage(info, false, "Debian package architecture: %s\n", DEB_TARGET_ARCH_OS);
    logMessage(info, false, "Debian package CPU: %s\n", DEB_TARGET_GNU_CPU);
 +  logMessage(info, false, "Compiler version: %s\n", CXX_VERSION_LONG);
-+  logMessage(info, false, "Compiler flags: %s\n", CFLAGS);
++  logMessage(info, false, "Compiler flags: %s\n", CXXFLAGS);
 +  {
 +    extern const char fftw_version[];
 +    logMessage(info, false, "FFTW version: %s\n", fftw_version);
