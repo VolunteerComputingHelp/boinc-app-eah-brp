@@ -544,7 +544,7 @@ Index: boinc-app-eah-brp/erp_execinfo_plus.c
  }
  
 -void report(const char * format, va_list args)
-+void report(const char * const format, const va_list args)
++void report(const char * const format, va_list args)
  {
      vfprintf(ostream, format, args);
      putc ('\n', ostream);
