@@ -14,11 +14,12 @@ Index: boinc-app-eah-brp/Makefile
 ===================================================================
 --- boinc-app-eah-brp.orig/Makefile
 +++ boinc-app-eah-brp/Makefile
-@@ -58,6 +58,7 @@ OBJS = demod_binary.o demod_binary_resam
+@@ -58,6 +58,8 @@ OBJS = demod_binary.o demod_binary_resam
  EINSTEINBINARY_TARGET ?= einsteinbinary
  TARGET = $(EINSTEINBINARY_TARGET)
  CXXFLAGS += -DTARGET=\"$(TARGET)\"
-+CXXFLAGS += -DLDFLAGS="\"$(LDFLAGS)\""
++CXXFLAGS := $(CXXFLAGS) -DCXXFLAGS="\"$(shell echo $(CXXFLAGS)|sed -r 's/[\\"\(\)]//g')\""
++CXXFLAGS += -DLDFLAGS="\"$(shell echo $(LDFLAGS)|sed -r 's/[\\"\(\)]//g')\""
  
  # primary role based tagets
  default: release

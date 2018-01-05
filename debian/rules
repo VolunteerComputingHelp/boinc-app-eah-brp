@@ -125,7 +125,7 @@ else
 ifeq ($(DEB_TARGET_GNU_CPU),i686)
   $(info W: Not supporting earlier systems than i686)
   # Demand i686 class system
-  CFLAGS_APPEND += -march=i686 -mcpu=i686
+  CFLAGS_APPEND += -march=i686 -mtune=i686
   CFLAGS_APPEND += -mfpmath=sse -msse
 endif
 ifeq ($(DEB_TARGET_GNU_CPU),x86_64)
@@ -148,8 +148,6 @@ CFLAGS_APPEND += -DCOMMUNICATIONREDUCTION=250
 DEB_TARGET_ARCH_OS=$(shell dpkg-architecture -qDEB_TARGET_ARCH_OS)
 CXXFLAGS += $(CFLAGS_APPEND)
 
-CXXFLAGS += -DCXXFLAGS="\"$(echo $(CFLAGS_APPEND)| sed -e 's/[\\"\(\)]//g')\""
-
 CXXFLAGS += -DDEBIAN_VERSION="\"$(DEBIAN_VERSION)\""
 CXXFLAGS += -DDEB_TARGET_ARCH_OS="\"$(DEB_TARGET_ARCH_OS)\""
 CXXFLAGS += -DDEB_TARGET_GNU_CPU="\"$(DEB_TARGET_GNU_CPU)\""
@@ -160,7 +158,6 @@ ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [5678]\.[0-9]\.[0-9]"))
 # Completing LTO
 LDFLAGS += $(CFLAGS_APPEND)
 endif
-CXXFLAGS += -DLDFLAGS="\"$(shell echo $(LDFLAGS)|sed -r 's/[\\"\(\)]//g')\""
 
 $(info I: Extended CXXFLAGS: $(CXXFLAGS))
 $(info I:          LDFLAGS: $(LDFLAGS))
