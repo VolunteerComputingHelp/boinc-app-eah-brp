@@ -26,6 +26,15 @@ Index: boinc-app-eah-brp/erp_utilities.cpp
  {
      size_t i, j, indx;
      uint8_t tempbyte;
+@@ -73,7 +73,7 @@ void endian_swap(uint8_t* pdata, size_t
+     return;
+ }
+ 
+-void getLocalTime(char* buffer) {
++void getLocalTime(char* const buffer) {
+     time_t timeNow = time(0);
+     struct tm* timeLocal = localtime(&timeNow);
+     strftime(buffer, TIME_BUFFER_SIZE - 1, "%H:%M:%S", timeLocal);
 @@ -144,8 +144,9 @@ void logMessage(const ERP_LOGLEVEL logLe
      va_end(varargs);
  }
@@ -37,7 +46,7 @@ Index: boinc-app-eah-brp/erp_utilities.cpp
      // old unsused code, we're already initialized (hence the fixed "true")
      static bool initialized = true;
  
-@@ -168,12 +169,13 @@ void sincosLUTInitialize(float **sinLUT,
+@@ -168,17 +169,16 @@ void sincosLUTInitialize(float **sinLUT,
              }
          */
      }
@@ -51,8 +60,30 @@ Index: boinc-app-eah-brp/erp_utilities.cpp
 +extern bool sincosLUTLookup(const float x, float *const sinX, float *const cosX)
  {
      float xt;
-     int i0;
-@@ -213,9 +215,9 @@ int resolveFilename(const char *logical,
+-    int i0;
+     float d, d2;
+-    float ts, tc;
+     float dummy;
+ 
+     xt = modff(ERP_TWO_PI_INV * x, &dummy); // xt in (-1, 1)
+@@ -193,13 +193,13 @@ extern bool sincosLUTLookup(float x, flo
+     }
+ 
+     // determine LUT index
+-    i0 = (int) (xt * ERP_SINCOS_LUT_RES_F + 0.5f);
++    const int i0 = (int) (xt * ERP_SINCOS_LUT_RES_F + 0.5f);
+     d = d2 = ERP_TWO_PI * (xt - ERP_SINCOS_LUT_RES_F_INV * i0);
+     d2 *= 0.5f * d;
+ 
+     // fetch sin/cos samples
+-    ts = sinSamples[i0];
+-    tc = cosSamples[i0];
++    const float ts = sinSamples[i0];
++    const float tc = cosSamples[i0];
+ 
+     //use Taylor-expansions for sin/cos around samples
+     (*sinX) = ts + d * tc - d2 * ts;
+@@ -213,9 +213,9 @@ int resolveFilename(const char *logical,
      return boinc_resolve_filename(logical, physical, maxLength);
  }
  
@@ -64,7 +95,7 @@ Index: boinc-app-eah-brp/erp_utilities.cpp
  {
      FILE *output = fopen(filename, "w");
      if(NULL == output) {
-@@ -232,7 +234,7 @@ int dumpFloatBufferToTextFile(const floa
+@@ -232,7 +232,7 @@ int dumpFloatBufferToTextFile(const floa
      return(0);
  }
  
@@ -86,7 +117,8 @@ Index: boinc-app-eah-brp/erp_utilities.h
 +    extern void sincosLUTInitialize(const float ** const sinLUT, const float ** const cosLUT);
 +    extern bool sincosLUTLookup(const float x, float *const sinX, float *const cosX);
  
-     extern int resolveFilename(const char *logical, char *physical, int maxLength);
+-    extern int resolveFilename(const char *logical, char *physical, int maxLength);
++    extern int resolveFilename(const char *const logical, char *const physical, int maxLength);
  
 -    extern int dumpFloatBufferToTextFile(const float *buffer, const size_t size, const char *filename);
 +    extern int dumpFloatBufferToTextFile(const float *const buffer, const size_t size, const char* const filename);
@@ -121,7 +153,7 @@ Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
  
 -int set_up_resampling(DIfloatPtr input_dip, DIfloatPtr *output_dip, const RESAMP_PARAMS *const params, float *sinLUTsamples, 
 -float *cosLUTsamples)
-+int set_up_resampling(const DIfloatPtr input_dip, DIfloatPtr* const output_dip, const RESAMP_PARAMS *const params, const float* const ignoreA, const float *const ignoreB)
++int set_up_resampling(DIfloatPtr const input_dip, DIfloatPtr* const output_dip, const RESAMP_PARAMS *const params, const float* const ignoreA, const float *const ignoreB)
  {
      //float * input = input_dip.host_ptr;
      float ** output = & (output_dip->host_ptr);
@@ -139,7 +171,7 @@ Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
  
  
 -int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS *const params)
-+int run_resampling(const DIfloatPtr input_dip, DIfloatPtr const output_dip, const RESAMP_PARAMS *const params)
++int run_resampling(DIfloatPtr const input_dip, DIfloatPtr const output_dip, const RESAMP_PARAMS *const params)
  {
 -    float * input  = input_dip.host_ptr;
 +    const float * input  = input_dip.host_ptr;
@@ -159,15 +191,19 @@ Index: boinc-app-eah-brp/demod_binary_resamp_cpu.h
 ===================================================================
 --- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.h
 +++ boinc-app-eah-brp/demod_binary_resamp_cpu.h
-@@ -34,7 +34,7 @@
+@@ -34,9 +34,9 @@
  extern "C" {
  #endif
  
 -extern int set_up_resampling(DIfloatPtr input, DIfloatPtr *output, const RESAMP_PARAMS *const params, float *sinLUTsamples, float *cosLUTsamples);
-+extern int set_up_resampling(DIfloatPtr input, DIfloatPtr* const output, const RESAMP_PARAMS* const params, const float* const, const float* const);
- extern int run_resampling(DIfloatPtr input, DIfloatPtr output, const RESAMP_PARAMS *const params);
- extern int tear_down_resampling(DIfloatPtr output);
+-extern int run_resampling(DIfloatPtr input, DIfloatPtr output, const RESAMP_PARAMS *const params);
+-extern int tear_down_resampling(DIfloatPtr output);
++extern int set_up_resampling(DIfloatPtr const input, DIfloatPtr* const output, const RESAMP_PARAMS* const params, const float* const, const float* const);
++extern int run_resampling(DIfloatPtr const input, DIfloatPtr output, const RESAMP_PARAMS *const params);
++extern int tear_down_resampling(DIfloatPtr const output);
  
+ #ifdef __cplusplus
+ }
 Index: boinc-app-eah-brp/opencl/app/demod_binary_ocl.cpp
 ===================================================================
 --- boinc-app-eah-brp.orig/opencl/app/demod_binary_ocl.cpp
@@ -194,79 +230,6 @@ Index: boinc-app-eah-brp/opencl/app/demod_binary_ocl.h
  extern int run_resampling(DIfloatPtr input, DIfloatPtr output, const RESAMP_PARAMS *const params);
  extern int tear_down_resampling(DIfloatPtr output);
  
-Index: boinc-app-eah-brp/home/moeller/github/boinc-app-eah-brp/demod_binary_hs_cpu.h
-===================================================================
---- boinc-app-eah-brp.orig/home/moeller/github/boinc-app-eah-brp/demod_binary_hs_cpu.h
-+++ /dev/null
-@@ -1,68 +0,0 @@
--/***************************************************************************
-- *   Copyright (C) 2010 by Oliver Bock                                     *
-- *   oliver.bock[AT]aei.mpg.de                                             *
-- *   Copyright (C) 2010 by Heinz-Bernd Eggenstein                          *
-- *                                                                         *
-- *   This file is part of Einstein@Home (Radio Pulsar Edition).            *
-- *                                                                         *
-- *   Description:                                                          *
-- *   Performs harmonic summing (2nd  ...16th harmonic) of powerspectrum    *
-- *   CPU variant.                                                          *
-- *                                                                         *
-- *   Einstein@Home is free software: you can redistribute it and/or modify *
-- *   it under the terms of the GNU General Public License as published     *
-- *   by the Free Software Foundation, version 2 of the License.            *
-- *                                                                         *
-- *   Einstein@Home is distributed in the hope that it will be useful,      *
-- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          *
-- *   GNU General Public License for more details.                          *
-- *                                                                         *
-- *   You should have received a copy of the GNU General Public License     *
-- *   along with Einstein@Home. If not, see <http://www.gnu.org/licenses/>. *
-- *                                                                         *
-- ***************************************************************************/
--
--#ifndef DEMOD_BINARY_HS_CPU_H
--#define DEMOD_BINARY_HS_CPU_H
--
--#include <stdint.h>
--
--#include "diptr.h"
--
--#ifdef __cplusplus
--extern "C" {
--#endif
--
--extern int set_up_harmonic_summing(float ** sumspec,
--                                   int32_t ** dirty,
--                                   unsigned int * nr_pages_ptr, 
--                                   unsigned int fundamental_idx_hi,
--                                   unsigned int harmonic_idx_hi);
--
--extern int harmonic_summing(float ** sumspec,
--                     int32_t ** dirtyFlags,
--                     const float * powerspectrum,
--                     unsigned int window_2,
--                     unsigned int fundamental_idx_hi,
--                     unsigned int harmonic_idx_hi,
--                     float * thr);
--
--extern int run_harmonic_summing(float **sumspec, 
--                                int32_t ** dirty_flags, 
--                                unsigned int nr_pages,
--                                DIfloatPtr powerspectrum, 
--                                unsigned int window_2, 
--                                unsigned int fundamental_idx_hi,
--                                unsigned int harmonic_idx_hi, 
--                                float *thresholds);
--
--extern int tear_down_harmonic_summing(float ** sumspec, 
--                                      int32_t ** dirty);
--
--
--#ifdef __cplusplus
--}
--#endif
--
--#endif
 Index: boinc-app-eah-brp/exchndl32.c
 ===================================================================
 --- boinc-app-eah-brp.orig/exchndl32.c
@@ -449,14 +412,265 @@ Index: boinc-app-eah-brp/hs_common.h
 -int harmonic_summing(float ** sumspec,
 -                     int32_t ** dirtyFlags,
 -                     const float * powerspectrum,
+-                     unsigned int window_2,
+-                     unsigned int fundamental_idx_hi,
+-                     unsigned int harmonic_idx_hi,
+-                     float * thr);
 +int harmonic_summing(float ** const sumspec,
 +                     int32_t ** const dirtyFlags,
 +                     const float * const powerspectrum,
-                      unsigned int window_2,
-                      unsigned int fundamental_idx_hi,
-                      unsigned int harmonic_idx_hi,
--                     float * thr);
++                     const unsigned int window_2,
++                     const unsigned int fundamental_idx_hi,
++                     const unsigned int harmonic_idx_hi,
 +                     const float * const thr);
  
  
+ }
+Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_fft_fftw.c
++++ boinc-app-eah-brp/demod_binary_fft_fftw.c
+@@ -44,7 +44,7 @@ fftwf_complex *t_series_resamp_fft = NUL
+ fftwf_plan fft_plan;
+ 
+ 
+-int set_up_fft(DIfloatPtr input, DIfloatPtr *output, uint32_t nsamples, unsigned int fft_size)
++int set_up_fft(DIfloatPtr const input, DIfloatPtr * const output, uint32_t const nsamples, const unsigned int fft_size)
+ {
+     // allocate memory for FFT (use of fftwf_malloc recommended by FFTW, see manual: section 2.1, page 3)
+ 
+@@ -130,11 +130,13 @@ int set_up_fft(DIfloatPtr input, DIfloat
+ }
+ 
+ 
+-int run_fft(DIfloatPtr input, DIfloatPtr output, uint32_t nsamples, unsigned int fft_size, float norm_factor)
++int run_fft(DIfloatPtr const input, DIfloatPtr const output, const uint32_t nsamples, const unsigned int fft_size, const float norm_factor)
+ {
++/*
+     // unused, as the pointers for input & output of FFT are already encapsulated in the plan
+     input.host_ptr = NULL;
+     nsamples = 0;
++*/
+ 
+     // execute FFT
+     fftwf_execute(fft_plan);
+Index: boinc-app-eah-brp/demod_binary_fft_fftw.h
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_fft_fftw.h
++++ boinc-app-eah-brp/demod_binary_fft_fftw.h
+@@ -35,8 +35,8 @@
+ extern "C" {
+ #endif
+ 
+-extern int set_up_fft(DIfloatPtr input, DIfloatPtr * output, uint32_t nsamples, unsigned int fft_size);
+-extern int run_fft(DIfloatPtr input, DIfloatPtr output, uint32_t nsamples, unsigned int fft_size, float norm_factor);
++extern int set_up_fft(DIfloatPtr const input, DIfloatPtr * const output, const uint32_t nsamples, const unsigned int fft_size);
++extern int run_fft(DIfloatPtr const input, DIfloatPtr output, const uint32_t nsamples, const unsigned int fft_size, const float norm_factor);
+ extern int tear_down_fft(DIfloatPtr output);
+ 
+ #ifdef __cplusplus
+Index: boinc-app-eah-brp/erp_execinfo_plus.c
+===================================================================
+--- boinc-app-eah-brp.orig/erp_execinfo_plus.c
++++ boinc-app-eah-brp/erp_execinfo_plus.c
+@@ -56,12 +56,12 @@ void report(const char *, va_list) ATTRI
+ void fatal(const char *, ...) ATTRIBUTE_PRINTF_1 ATTRIBUTE_NORETURN;
+ void non_fatal(const char *, ...) ATTRIBUTE_PRINTF_1;
+ int set_default_bfd_target(void);
+-void list_matching_formats(char **);
++void list_matching_formats(const char * const *);
+ off_t get_file_size(const char *);
+ 
+ /* Read in the symbol table.  */
+ 
+-static int slurp_symtab(bfd *abfd)
++static int slurp_symtab(bfd *const abfd)
+ {
+     long symcount;
+     unsigned int size;
+@@ -92,7 +92,7 @@ static bfd_boolean found;
+ /* Look for an address in a section.  This is called via
+  bfd_map_over_sections.  */
+ 
+-static void find_address_in_section(bfd *abfd, asection *section, void *data ATTRIBUTE_UNUSED)
++static void find_address_in_section(bfd *const abfd, asection *const section, void *const data ATTRIBUTE_UNUSED)
+ {
+     bfd_vma vma;
+     bfd_size_type size;
+@@ -118,7 +118,7 @@ static void find_address_in_section(bfd
+ /* Translate hexadecimal address into
+  file_name:line_number and optionally function name.  */
+ 
+-static void translate_address(bfd *abfd, const char *address)
++static void translate_address(bfd *const abfd, const char *const address)
+ {
+     pc = bfd_scan_vma(address, NULL, 16);
+ 
+@@ -170,7 +170,7 @@ static void translate_address(bfd *abfd,
+ 
+ /* Process a file */
+ 
+-static int process_file(const char *file_name, const char *address)
++static int process_file(const char *const file_name, const char *const address)
+ {
+     bfd *abfd;
+     char **matching;
+@@ -214,7 +214,7 @@ static int process_file(const char *file
+     return 0;
+ }
+ 
+-int backtrace_symbols_fd_plus(const char *const *symbols, int size, int fd)
++int backtrace_symbols_fd_plus(const char *const *symbols, const int size, int fd)
+ {
+     /* sanity check */
+     if (fd <= 0) {
+@@ -320,7 +320,7 @@ int backtrace_symbols_fd_plus(const char
+     return retval;
+ }
+ 
+-void bfd_nonfatal(const char *string)
++void bfd_nonfatal(const char *const string)
+ {
+     const char *errmsg = bfd_errmsg(bfd_get_error());
+ 
+@@ -330,18 +330,18 @@ void bfd_nonfatal(const char *string)
+         fprintf(ostream, "%s\n", errmsg);
+ }
+ 
+-void bfd_fatal(const char *string)
++void bfd_fatal(const char *const string)
+ {
+     bfd_nonfatal(string);
+ }
+ 
+-void report(const char * format, va_list args)
++void report(const char * const format, va_list args)
+ {
+     vfprintf(ostream, format, args);
+     putc ('\n', ostream);
+ }
+ 
+-void fatal VPARAMS ((const char *format, ...))
++void fatal VPARAMS ((const char *const format, ...))
+ {
+     VA_OPEN (args, format);
+     VA_FIXEDARG (args, const char *, format);
+@@ -350,7 +350,7 @@ void fatal VPARAMS ((const char *format,
+     VA_CLOSE (args);
+ }
+ 
+-void non_fatal VPARAMS ((const char *format, ...))
++void non_fatal VPARAMS ((const char *const format, ...))
+ {
+     VA_OPEN (args, format);
+     VA_FIXEDARG (args, const char *, format);
+@@ -363,7 +363,7 @@ void non_fatal VPARAMS ((const char *for
+  exist, or if it is not a real file, then a suitable non-fatal
+  error message is printed and zero is returned.  */
+ 
+-off_t get_file_size(const char * file_name)
++off_t get_file_size(const char *const file_name)
+ {
+     struct stat statbuf;
+ 
+@@ -385,7 +385,7 @@ off_t get_file_size(const char * file_na
+  bfd_get_error () == bfd_error_file_ambiguously_recognized, print
+  the possible matching targets.  */
+ 
+-void list_matching_formats(char **p)
++void list_matching_formats(char const * const *p)
+ {
+     fprintf(ostream, _("Matching formats:"));
+     while (*p)
+@@ -401,7 +401,7 @@ void list_matching_formats(char **p)
+ int set_default_bfd_target(void)
+ {
+     /* The macro TARGET is defined by Makefile.  */
+-    const char *target = TARGET;
++    const char *const target = TARGET;
+ 
+     if (!bfd_set_default_target(target)) {
+         fatal(_("can't set BFD default target to `%s': %s"), target,
+Index: boinc-app-eah-brp/erp_execinfo_plus.h
+===================================================================
+--- boinc-app-eah-brp.orig/erp_execinfo_plus.h
++++ boinc-app-eah-brp/erp_execinfo_plus.h
+@@ -32,7 +32,7 @@ extern "C" {
+      *
+      * @return: 0 if success, <0 if error, >0 if warning
+      */
+-    int backtrace_symbols_fd_plus(const char *const *symbols, int size, int fd);
++    int backtrace_symbols_fd_plus(const char *const *symbols, const int size, int fd);
+ 
+ #ifdef __cplusplus
+ }
+Index: boinc-app-eah-brp/hs_common.c
+===================================================================
+--- boinc-app-eah-brp.orig/hs_common.c
++++ boinc-app-eah-brp/hs_common.c
+@@ -33,9 +33,9 @@ extern "C" {
+ int harmonic_summing(float ** const sumspec,
+                      int32_t ** const dirty,
+                      const float * const powerspectrum,
+-                     unsigned int window_2,
+-                     unsigned int fundamental_idx_hi,
+-                     unsigned int harmonic_idx_hi,
++                     const unsigned int window_2,
++                     const unsigned int fundamental_idx_hi,
++                     const unsigned int harmonic_idx_hi,
+                      const float * const thr) {	
+ 
+       // loop over frequency bins and maximize the summed power at each bin for each number of summed harmonics
+Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
++++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -193,7 +193,7 @@ static void sighandler(int sig)
+     return;
+ }
+ 
+-gzFile boinc_gzopen(const char* path, const char* mode) {
++gzFile boinc_gzopen(const char* const path, const char* const mode) {
+   FILE* fp = boinc_fopen(path, mode);
+   if(!fp) return NULL;
+   return gzdopen(fileno(fp), mode);
+@@ -203,7 +203,7 @@ void erp_fraction_done(const double frac
+   boinc_fraction_done((frac+pass)/passes);
+ }
+ 
+-static void handle_option(vector<char*>& options, int& option_index, const char* option)
++static void handle_option(vector<char*>& options, int& option_index, const char* const option)
+ {
+     /* add option to forwarded option list */
+     options.push_back((char*) calloc(strlen(option) + 1, sizeof(char)));
+@@ -215,7 +215,7 @@ static void handle_option(vector<char*>&
+     option_index++;
+ }
+ 
+-static void handle_option_value(vector<char*>& options, int& option_index, const char* value)
++static void handle_option_value(vector<char*>& options, int& option_index, const char* const value)
+ {
+     /* add value to forwarded option list */
+     options.push_back((char*) calloc(strlen(value) + 1, sizeof(char)));
+@@ -227,7 +227,7 @@ static void handle_option_value(vector<c
+     option_index++;
+ }
+ 
+-static void handle_option_file_value(vector<char*>& options, int& option_index, const char* value)
++static void handle_option_file_value(vector<char*>& options, int& option_index, const char* const value)
+ {
+     /* add filename to forwarded option list */
+     options.push_back((char*) calloc(MAX_PATH_LENGTH, sizeof(char)));
+Index: boinc-app-eah-brp/erp_boinc_wrapper.h
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.h
++++ boinc-app-eah-brp/erp_boinc_wrapper.h
+@@ -39,7 +39,7 @@ extern "C" {
+ #endif
+ 
+     extern int MAIN(unsigned int,char**);
+-    extern gzFile boinc_gzopen(const char* path, const char* mode);
++    extern gzFile boinc_gzopen(const char* const path, const char* const mode);
+ 
+ #ifdef  __cplusplus
  }
