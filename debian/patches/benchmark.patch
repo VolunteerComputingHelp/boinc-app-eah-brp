@@ -2,7 +2,16 @@ Index: boinc-app-eah-brp/Makefile
 ===================================================================
 --- boinc-app-eah-brp.orig/Makefile
 +++ boinc-app-eah-brp/Makefile
-@@ -84,7 +84,9 @@ WUbin=./debian/extra/einstein_bench/test
+@@ -18,6 +18,8 @@
+ #                                                                         #
+ ###########################################################################
+ 
++SHELL=bash
++
+ # path settings
+ EINSTEIN_RADIO_SRC?=$(PWD)
+ EINSTEIN_RADIO_INSTALL?=$(PWD)
+@@ -85,7 +87,11 @@ WUbin=./debian/extra/einstein_bench/test
  WUbank=./debian/extra/einstein_bench/testwu/stochastic_full.bank
  
  $(WUbank).50:	$(WUbank)
@@ -10,17 +19,29 @@ Index: boinc-app-eah-brp/Makefile
 +	head -n 50  $< > $@
 +$(WUbank).100:	$(WUbank)
 +	head -n 100 $< > $@
++$(WUbank).200:	$(WUbank)
++	head -n 200 $< > $@
  
  # file based targets
  profile: results_profile.cand
-@@ -96,6 +98,10 @@ results_profile.cand: $(TARGET) $(WUbank
+@@ -97,6 +103,14 @@ results_profile.cand: $(TARGET) $(WUbank
  	time ./$(TARGET) -t $(WUbank).50 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand
  	@echo "Finished gathering profiling data..."
  
-+benchmark: $(TARGET) $(WUbank).50 $(WUbank).100
-+	time ./$(TARGET) -t $(WUbank).50  -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand | tee    benchmark
-+	time ./$(TARGET) -t $(WUbank).100 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand | tee -a benchmark
++test: $(TARGET) $(WUbank).50 $(WUbank).100 $(WUbank).200
++	#rm -f status_profile.cpt results_profile.cand
++	#time ./$(TARGET) -t $(WUbank).50  -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand
++	#rm -f status_profile.cpt results_profile.cand
++	#time ./$(TARGET) -t $(WUbank).100 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand
++	rm -f status_profile.cpt results_profile.cand
++	time ./$(TARGET) -t $(WUbank).200 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand
 +
  $(TARGET): $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_boinc_wrapper.cpp $(OBJS)
  	$(CXX) -g $(CXXFLAGS) $(LDFLAGS) $(EINSTEIN_RADIO_SRC)/erp_boinc_wrapper.cpp -o $(TARGET) $(OBJS) $(LIBS)
  
+@@ -151,3 +165,5 @@ install:
+ clean:
+ 	rm -f $(OBJS) $(TARGET)
+ 
++
++.PHONY: clean benchmark install release profile debug default

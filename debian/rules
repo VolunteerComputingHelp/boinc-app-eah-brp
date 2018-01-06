@@ -200,6 +200,6 @@ override_dh_auto_clean:
 	         debian/extra/einstein_bench/stderr.txt \
 	         debian/extra/einstein_bench/testwu/stochastic_full.bank.*
 
+test:	override_dh_auto_test
 override_dh_auto_test:
-	$(MAKE) benchmark
-
+	$(MAKE) TARGET=$(EINSTEINBINARY_TARGET) test

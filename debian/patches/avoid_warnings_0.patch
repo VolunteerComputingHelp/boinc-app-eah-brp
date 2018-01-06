@@ -13,3 +13,12 @@ Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
  
      /* lets start by ignoring ANY further occurrences of this signal
           (hopefully just in THIS thread, if truly implementing POSIX threads */
+@@ -474,7 +476,7 @@ static int worker(void)
+     }
+ 
+     /* explicitly free command line resources (skip first entry) */
+-    for(int i = 1; i < forward_argv.size(); ++i) {
++    for(unsigned int i = 1; i < forward_argv.size(); ++i) {
+         if(forward_argv.at(i)) {
+             free(forward_argv.at(i));
+             forward_argv.at(i) = NULL;
