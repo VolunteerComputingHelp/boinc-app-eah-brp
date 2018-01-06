@@ -21,3 +21,4 @@ compile_opencl_version.patch
 disable_checkpointing.patch
 progressfraction.patch
 introduce_const.patch
+benchmark.patch

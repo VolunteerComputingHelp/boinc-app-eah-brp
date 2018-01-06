@@ -1,0 +1,26 @@
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -84,7 +84,9 @@ WUbin=./debian/extra/einstein_bench/test
+ WUbank=./debian/extra/einstein_bench/testwu/stochastic_full.bank
+ 
+ $(WUbank).50:	$(WUbank)
+-	head -n 50 $< > $@
++	head -n 50  $< > $@
++$(WUbank).100:	$(WUbank)
++	head -n 100 $< > $@
+ 
+ # file based targets
+ profile: results_profile.cand
+@@ -96,6 +98,10 @@ results_profile.cand: $(TARGET) $(WUbank
+ 	time ./$(TARGET) -t $(WUbank).50 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand
+ 	@echo "Finished gathering profiling data..."
+ 
++benchmark: $(TARGET) $(WUbank).50 $(WUbank).100
++	time ./$(TARGET) -t $(WUbank).50  -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand | tee    benchmark
++	time ./$(TARGET) -t $(WUbank).100 -l $(WUzap) -A 0.04 -P 3.0 -W -z -i $(WUbin) -c status_profile.cpt -o results_profile.cand | tee -a benchmark
++
+ $(TARGET): $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_boinc_wrapper.cpp $(OBJS)
+ 	$(CXX) -g $(CXXFLAGS) $(LDFLAGS) $(EINSTEIN_RADIO_SRC)/erp_boinc_wrapper.cpp -o $(TARGET) $(OBJS) $(LIBS)
+ 
