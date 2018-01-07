@@ -2,6 +2,9 @@ boinc-app-eah-brp (0.20170426+dfsg-10) UNRELEASED; urgency=medium
 
   * And some further beautification to the Makefile output.
   * Added test target with small benchmark
+  * Disabled link-time optimisation since performance gain only
+    minuscule if observable at all.
+  * Wisdom creation script integrates FFTW version number in wisdom file.
   
  -- Steffen Moeller <moeller@debian.org>  Fri, 05 Jan 2018 19:40:51 +0100
 

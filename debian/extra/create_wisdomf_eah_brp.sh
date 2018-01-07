@@ -47,12 +47,11 @@ fi
 
 DESTFILE="$1"
 if [ -z "$1" ]; then
-	DESTFILE=/tmp/wisdomf
+	DESTFILE=/tmp/brp4.$(fftw-wisdom --version | head -n 1 | tr " " "\n" |tail -n 1 )wisdomf
 fi
 
-
 if [ -r "$DESTFILE" ]; then
-	echo "E: File '$DESTFILE' is already existing."
+	echo "E: File '$DESTFILE' already exists."
 	exit 1
 fi
 
@@ -76,7 +75,7 @@ TAGS=rof12582912
 
 if echo "$ARCH" | egrep -q 'i386|x86_64|powerpc'; then
 	echo "I: Also generating wisdom for 2^26 sample projects (FGRP)"
-	TAGS="$TAGS rob67108864"
+	#TAGS="$TAGS rob67108864"
 
 else
 	# some extra checks on CPU speeds should go here
@@ -98,4 +97,5 @@ fftwf-wisdom $WISDOMFLAGS -v -o "$DESTFILE" $TAGS	# do not use quotes around $TA
 
 echo "I: Wisdom file was computed successfully. Do"
 echo "   sudo mkdir -p /etc/fftw"
-echo "   sudo mv '$DESTFILE' /etc/fftw/wisdomf"
+echo "   sudo mv '$DESTFILE' /etc/fftw/"
+echo "   (echo /etc/fftw && sudo ln -s $(basename $DESTFILE) brp4.wisdomf)"

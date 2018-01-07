@@ -135,8 +135,8 @@ endif
 endif
 
 ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [5678]\.[0-9]\.[0-9]"))
-$(info I: Enabled link-time optimisation for g++ >= 5)
-CFLAGS_APPEND += -flto
+#$(info I: Enabled link-time optimisation for g++ >= 5)
+#CFLAGS_APPEND += -flto
 endif
 
 CFLAGS_APPEND += -DNOCHECKPOINTING
@@ -156,7 +156,7 @@ CXXFLAGS += -DCXX_VERSION_LONG="\"$(CXX_VERSION_LONG)\""
 
 ifeq (1,$(shell $(CXX) --version | egrep -c "g\+\+.* [5678]\.[0-9]\.[0-9]"))
 # Completing LTO
-LDFLAGS += $(CFLAGS_APPEND)
+#LDFLAGS += $(CFLAGS_APPEND)
 endif
 
 $(info I: Extended CXXFLAGS: $(CXXFLAGS))
