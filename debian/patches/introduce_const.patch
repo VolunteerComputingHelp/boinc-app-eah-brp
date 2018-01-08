@@ -439,7 +439,7 @@ Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
  {
      // allocate memory for FFT (use of fftwf_malloc recommended by FFTW, see manual: section 2.1, page 3)
  
-@@ -154,11 +154,13 @@ int set_up_fft(DIfloatPtr input, DIfloat
+@@ -155,11 +155,13 @@ int set_up_fft(DIfloatPtr input, DIfloat
  }
  
  

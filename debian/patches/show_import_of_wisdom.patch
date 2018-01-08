@@ -18,7 +18,7 @@ Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
  
  
  int set_up_fft(DIfloatPtr input, DIfloatPtr *output, uint32_t nsamples, unsigned int fft_size)
-@@ -63,9 +65,76 @@ int set_up_fft(DIfloatPtr input, DIfloat
+@@ -63,9 +65,77 @@ int set_up_fft(DIfloatPtr input, DIfloat
      /// else load system wide wisdom if present
  
  #ifdef EMBEDDED_WISDOM_HEADER
@@ -37,7 +37,7 @@ Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
 +    {
 +        struct stat buffer;
 +        char wisdomfilenameWithVersion[255];
-+        vsnprintf(wisdomfilenameWithVersion,254,"/etc/fftw/brp4.%s.wisdomf",fftw_version);
++        snprintf(wisdomfilenameWithVersion,254,"/etc/fftw/brp4.%s.wisdomf",fftw_version);
 +        char wisdomfilenameUnversioned[]="/etc/fftw/brp4.wisdomf";
 +        char *wisdomfilename=NULL;
 +        // checking if wisdomfilename exists, opening it if it does, falling back to system wisdom if not
@@ -89,7 +89,8 @@ Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
 +		else
 +        	{
 +        	    logMessage(error, true, "Failed to import FFTW system-wide wisdom even though '%s' exists.\n", filename);
-+		    logMessage(info, false, "Consider to create application specific wisdom file at '%s'.\n", wisdomfilename);
++		    logMessage(info, false, "Consider to create application specific wisdom file at '%s' or '%s'.\n",
++                                            wisdomfilenameWithVersion, wisdomfilenameUnversioned);
 +        	}
 +            }
 +        }

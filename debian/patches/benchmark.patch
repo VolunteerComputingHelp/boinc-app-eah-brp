@@ -45,16 +45,3 @@ Index: boinc-app-eah-brp/Makefile
  
 +
 +.PHONY: clean benchmark install release profile debug default
-Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
-===================================================================
---- boinc-app-eah-brp.orig/demod_binary_fft_fftw.c
-+++ boinc-app-eah-brp/demod_binary_fft_fftw.c
-@@ -78,7 +78,7 @@ int set_up_fft(DIfloatPtr const input, D
-     {
-         struct stat buffer;
-         char wisdomfilenameWithVersion[255];
--        vsnprintf(wisdomfilenameWithVersion,254,"/etc/fftw/brp4.%s.wisdomf",fftw_version);
-+        snprintf(wisdomfilenameWithVersion,254,"/etc/fftw/brp4.%s.wisdomf",fftw_version);
-         char wisdomfilenameUnversioned[]="/etc/fftw/brp4.wisdomf";
-         char *wisdomfilename=NULL;
-         // checking if wisdomfilename exists, opening it if it does, falling back to system wisdom if not
