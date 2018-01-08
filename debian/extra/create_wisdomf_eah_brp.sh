@@ -58,8 +58,8 @@ fi
 echo "I: Computing wisdom file for BRP4 and FGRP projects. This will take several hours if not days."
 echo
 
-if [ -r /etc/fftw/wisdomf ]; then
-	echo "W: Rename existing /etc/fftw/wisdomf if you have not generated it yourself"
+if [ -r /etc/fftw/$(basename $DESTFILE) ]; then
+	echo "W: Rename existing /etc/fftw/$(basenme $DESTFILE) if you have not generated it yourself"
 	echo
 fi
 
@@ -95,7 +95,9 @@ fftwf-wisdom $WISDOMFLAGS -v -o "$DESTFILE" $TAGS	# do not use quotes around $TA
 # rob67108864 is meant for a "2^26 length, complex to real inverse FFT" for FGRP
 #             as suggested by Bernd Machenschalk
 
-echo "I: Wisdom file was computed successfully. Do"
+echo "I: Wisdom file was computed successfully. To move the file to where the BRP app looks for it, do:"
 echo "   sudo mkdir -p /etc/fftw"
 echo "   sudo mv '$DESTFILE' /etc/fftw/"
-echo "   (echo /etc/fftw && sudo ln -s $(basename $DESTFILE) brp4.wisdomf)"
+if [ "$(basename $DESTFILE)" != "brp4.wisdomf" ]; then
+	echo "   (cd /etc/fftw && sudo ln -s $(basename $DESTFILE) brp4.wisdomf)"
+fi

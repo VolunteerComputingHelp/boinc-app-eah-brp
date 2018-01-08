@@ -430,8 +430,8 @@ Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
 ===================================================================
 --- boinc-app-eah-brp.orig/demod_binary_fft_fftw.c
 +++ boinc-app-eah-brp/demod_binary_fft_fftw.c
-@@ -44,7 +44,7 @@ fftwf_complex *t_series_resamp_fft = NUL
- fftwf_plan fft_plan;
+@@ -45,7 +45,7 @@ fftwf_plan fft_plan;
+ extern const char fftw_version[];
  
  
 -int set_up_fft(DIfloatPtr input, DIfloatPtr *output, uint32_t nsamples, unsigned int fft_size)
@@ -439,7 +439,7 @@ Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
  {
      // allocate memory for FFT (use of fftwf_malloc recommended by FFTW, see manual: section 2.1, page 3)
  
-@@ -130,11 +130,13 @@ int set_up_fft(DIfloatPtr input, DIfloat
+@@ -154,11 +154,13 @@ int set_up_fft(DIfloatPtr input, DIfloat
  }
  
  

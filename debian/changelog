@@ -1,12 +1,14 @@
-boinc-app-eah-brp (0.20170426+dfsg-10) UNRELEASED; urgency=medium
+boinc-app-eah-brp (0.20170426+dfsg-10) unstable; urgency=medium
 
   * And some further beautification to the Makefile output.
   * Added test target with small benchmark
   * Disabled link-time optimisation since performance gain only
     minuscule if observable at all.
   * Wisdom creation script integrates FFTW version number in wisdom file.
+  * Application looks at /etc/fftw/brp.3.3.7.wisdomf for wisdom file (or
+    whatever the current version of the FFTW3 library may be at runtime).
   
- -- Steffen Moeller <moeller@debian.org>  Fri, 05 Jan 2018 19:40:51 +0100
+ -- Steffen Moeller <moeller@debian.org>  Mon, 08 Jan 2018 13:32:44 +0100
 
 boinc-app-eah-brp (0.20170426+dfsg-9) UNRELEASED; urgency=medium
 
