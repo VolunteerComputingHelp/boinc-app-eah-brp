@@ -99,5 +99,5 @@ echo "I: Wisdom file was computed successfully. To move the file to where the BR
 echo "   sudo mkdir -p /etc/fftw"
 echo "   sudo mv '$DESTFILE' /etc/fftw/"
 if [ "$(basename $DESTFILE)" != "brp4.wisdomf" ]; then
-	echo "   (cd /etc/fftw && sudo ln -s $(basename $DESTFILE) brp4.wisdomf)"
+	echo "   (cd /etc/fftw && sudo ln -fs $(basename $DESTFILE) brp4.wisdomf)"
 fi
