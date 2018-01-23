@@ -118,7 +118,7 @@ Index: boinc-app-eah-brp/demod_binary.c
  
  
    // open input stream
-@@ -1429,19 +1453,25 @@ thrA[4] = 0.0;
+@@ -1433,19 +1457,25 @@ thrA[4] = 0.0;
        free(binned_spectrum);
  
        template_counter++;
@@ -145,7 +145,7 @@ Index: boinc-app-eah-brp/demod_binary.c
  	result = set_checkpoint(&uvar, &cp_head, candidates_all);
  	if(result != 0) return(result);
  
-@@ -1449,7 +1479,11 @@ thrA[4] = 0.0;
+@@ -1453,7 +1483,11 @@ thrA[4] = 0.0;
  	  logMessage(info, true, "Checkpoint committed!\n");
  	  boinc_checkpoint_completed();
        }
@@ -157,7 +157,7 @@ Index: boinc-app-eah-brp/demod_binary.c
        // time to check what's going on
        boinc_get_status(&boinc_status);
  
-@@ -1512,9 +1546,11 @@ thrA[4] = 0.0;
+@@ -1516,9 +1550,11 @@ thrA[4] = 0.0;
  
    // set final checkpoint to avoid recomputation (since last checkpoint) on application restart
    logMessage(debug, true, "Search done!\n");
@@ -169,7 +169,7 @@ Index: boinc-app-eah-brp/demod_binary.c
  
    // compute the -log10() of the inverse false alarm rate for all candidates
    for(unsigned int i = 0; i < N_CAND; i++)
-@@ -1755,6 +1791,7 @@ int compare_structs_by_ifa(const void *
+@@ -1759,6 +1795,7 @@ int compare_structs_by_ifa(const void *
      }
  }
  
@@ -177,7 +177,7 @@ Index: boinc-app-eah-brp/demod_binary.c
  // Write checkpoint
  int set_checkpoint(const User_Variables * const uvar,
                     const CP_Header * const cp_head,
-@@ -1797,6 +1834,7 @@ int set_checkpoint(const User_Variables
+@@ -1801,6 +1838,7 @@ int set_checkpoint(const User_Variables
    // success
    return(0);
  }

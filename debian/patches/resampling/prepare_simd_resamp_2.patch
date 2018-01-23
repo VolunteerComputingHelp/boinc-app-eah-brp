@@ -1,0 +1,135 @@
+Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.c
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.c
+@@ -31,6 +31,10 @@
+ #include "demod_binary.h"
+ #include "erp_utilities.h"
+ 
++/*****
++ * include sine-cosine-Lookuptable: needed by the new resampling
++ *****/
++#include "sin_cos_LUT.c"
+ 
+ // TODO: do we wanna keep those global (or use proper C++, or pass them around)?
+ float *del_t = NULL;
+@@ -76,64 +80,82 @@ float *cosLUTsamples)
+     return 0;
+ }
+ 
++/*****
++ * detected SIMD-architecture and include corresponing file
++ *****/
++#ifdef __ARM_NEON
++    #pragma message "Detected NEON -> using run_resampling_NEON.c"
++    #include "run_resampling_NEON.c"
++#elif __AVX__
++    #pragma message "Detected AVX -> using run_resampling_AVX.c"
++    #include "run_resampling_AVX.c"
++#else
++    #pragma message "No SIMD detected -> using run_resampling_SCALAR.c"
++    #include "run_resampling_SCALAR.c"
++#endif
+ 
+-int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS *const params)
+-{
+-    float * input  = input_dip.host_ptr;
+-    float * output = output_dip.host_ptr;
+-    
+-    unsigned int i;
+-    float i_f;
+-
+-    unsigned int n_steps;           // number of timesteps to take when resampling
+-    float mean = 0.0f;              // mean of the time series
+-
+-    for(i = 0, i_f = 0.0f; i < params->nsamples_unpadded; i++, i_f += 1.0f)
+-    {
+-        float t = i_f * params->dt;
+-        float sinValue = 0.0f;
+-        float dummy = 0.0f;
++/*****
++ * commented out: we do not use this function anymore.
++ * Instead using the new resampling included above.
++ *****/
++
++//int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS *const params)
++//{
++//    float * input  = input_dip.host_ptr;
++//    float * output = output_dip.host_ptr;
++
++//    unsigned int i;
++//    float i_f;
++
++//    unsigned int n_steps;           // number of timesteps to take when resampling
++//    float mean = 0.0f;              // mean of the time series
++
++//    for(i = 0, i_f = 0.0f; i < params->nsamples_unpadded; i++, i_f += 1.0f)
++//    {
++//        float t = i_f * params->dt;
++//        float sinValue = 0.0f;
++//        float dummy = 0.0f;
+ 
+         // lookup sin(Omega * t + Psi0)
+-        sincosLUTLookup(params->Omega * t + params->Psi0, &sinValue, &dummy);
++//        sincosLUTLookup(params->Omega * t + params->Psi0, &sinValue, &dummy);
+ 
+         // compute time offsets as multiples of tsampm subtract zero time offset
+-        del_t[i] = params->tau * sinValue * params->step_inv - params->S0;
+-    }
++//        del_t[i] = params->tau * sinValue * params->step_inv - params->S0;
++//    }
+ 
+     // number of timesteps that fit into the duration = at most the amount we had before
+-    n_steps = params->nsamples_unpadded - 1;
++//    n_steps = params->nsamples_unpadded - 1;
+ 
+     // nearest_idx (see loop below) must not exceed n_unpadded - 1, so go back as far as needed to ensure that
+-    while(n_steps - del_t[n_steps] >=  params->nsamples_unpadded - 1)
+-      n_steps--;
++//    while(n_steps - del_t[n_steps] >=  params->nsamples_unpadded - 1)
++//      n_steps--;
+ 
+     // loop over time at the pulsar (index i, i_f) and find the bin in detector time at which
+     // a signal sent at i at the pulsar would arrive at the detector
+-    for(i = 0, i_f = 0.0f; i < n_steps; i++, i_f += 1.0f)
+-      {
++//    for(i = 0, i_f = 0.0f; i < n_steps; i++, i_f += 1.0f)
++//      {
+ 	// sample i arrives at the detector at i_f - del_t[i], choose nearest neighbour
+-	int nearest_idx = (int)(i_f - del_t[i] + 0.5);
++//	int nearest_idx = (int)(i_f - del_t[i] + 0.5);
+ 
+ 	// set i-th bin in resampled time series (at the pulsar) to nearest_idx bin from de-dispersed time series
+-	output[i] = input[nearest_idx];
+-	mean += output[i];
+-      }
++//	output[i] = input[nearest_idx];
++//	mean += output[i];
++//      }
+ 
+-    logMessage(debug, true,"Time series sum: %f\n",mean);
++//    logMessage(debug, true,"Time series sum: %f\n",mean);
+ 
+-    mean /= i_f;
++//    mean /= i_f;
+ 
+-    logMessage(debug, true, "Actual time series mean is: %e (length: %i)\n", mean, n_steps);
++//    logMessage(debug, true, "Actual time series mean is: %e (length: %i)\n", mean, n_steps);
+ 
+     // fill up with mean if necessary
+-    for( ; i < params->nsamples; i++)
+-    {
+-        output[i] = mean;
+-    }
++//    for( ; i < params->nsamples; i++)
++//    {
++//        output[i] = mean;
++//    }
+ 
+-    return 0;
+-}
++//    return 0;
++//}
+ 
+ 
+ int tear_down_resampling(DIfloatPtr output)

@@ -39,7 +39,7 @@ Index: boinc-app-eah-brp/Makefile
  $(TARGET): $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_boinc_wrapper.cpp $(OBJS)
  	$(CXX) -g $(CXXFLAGS) $(LDFLAGS) $(EINSTEIN_RADIO_SRC)/erp_boinc_wrapper.cpp -o $(TARGET) $(OBJS) $(LIBS)
  
-@@ -151,3 +165,5 @@ install:
+@@ -145,3 +159,5 @@ install:
  clean:
  	rm -f $(OBJS) $(TARGET)
  

@@ -1,0 +1,127 @@
+Index: boinc-app-eah-brp/run_resampling_AVX.c
+===================================================================
+--- /dev/null
++++ boinc-app-eah-brp/run_resampling_AVX.c
+@@ -0,0 +1,122 @@
++/*****
++ * SIMD-Resampling Function for X86 & X64 with
++ * support for AVX using intel-intrinsics.
++ *
++ * use run_resampling_SCALAR.c as reference while reading this
++ *****/
++
++#include <immintrin.h>
++
++int run_resampling(DIfloatPtr input_dip, DIfloatPtr output_dip, const RESAMP_PARAMS * const params) {
++    float * input = input_dip.host_ptr;
++    float * output = output_dip.host_ptr;
++
++    unsigned int n_steps; // number of timesteps to take when resampling
++    float mean = 0.0f; // mean of the time series
++
++    int i0[8]; //LUT-index for lookup
++
++    //Preload values from params-struct
++    __m256 vectF_dt = _mm256_broadcast_ss(&(params->dt));
++    __m256 vectF_Omega = _mm256_broadcast_ss(&(params->Omega));
++    __m256 vectF_Psi0 = _mm256_broadcast_ss(&(params->Psi0));
++    __m256 vectF_tau = _mm256_broadcast_ss(&(params->tau));
++    __m256 vectF_stepInv = _mm256_broadcast_ss(&(params->step_inv));
++    __m256 vectF_s0 = _mm256_broadcast_ss(&(params->S0));
++
++    //Preload some fixed numbers.
++    __m256 vectF_05 = _mm256_set1_ps(0.5f); //load 0.5
++    __m256 vectF_8 = _mm256_set1_ps(8.0f); // load 8
++
++    //Init loop-index
++    __m256 vectF_i = _mm256_setr_ps(-8.0f, -7.0f, -6.0f, -5.0f, -4.0f, -3.0f, -2.0f, -1.0f); //load i in vector
++
++
++    for (uint32_t i=0; i< params->nsamples_unpadded; i+=8) {
++        //increment loop-index
++        vectF_i = _mm256_add_ps(vectF_i, vectF_8); //i to float (faster than counting in a float)
++
++        //determine x for sine-lookup
++        __m256 vectF_x = _mm256_mul_ps(vectF_i, vectF_dt); //i * params->dt
++        vectF_x = _mm256_mul_ps(vectF_x, vectF_Omega); // * params->Omega
++        vectF_x = _mm256_add_ps(vectF_x, vectF_Psi0); //  + params->Psi0
++
++        //xPi = modff(ERP_TWO_PI_INX * x, unused)
++        __m256 vectF_2PiInv = _mm256_set1_ps(ERP_TWO_PI_INV);
++        __m256 vectF_xPi = _mm256_mul_ps(vectF_2PiInv, vectF_x); //ERP_TWO_PI_INV * x
++        __m256 vectF_xPi0 = _mm256_floor_ps(vectF_xPi); //round down
++	vectF_x = _mm256_sub_ps(vectF_xPi, vectF_xPi0); //x_pi - (int)x_pi
++
++        //determine LUT-index
++        //ToDo: use rounding
++        __m256 vectF_sinLutRes = _mm256_set1_ps(ERP_SINCOS_LUT_RES_F);
++        __m256 vectF_i0 = _mm256_mul_ps(vectF_x, vectF_sinLutRes); //x * ERP_SINCOS_LUT_RES_F
++        vectF_i0 = _mm256_add_ps(vectF_i0, vectF_05); // + 0.5f
++        __m256i vect_i0 = _mm256_cvttps_epi32(vectF_i0); //convert i0 to int
++        vectF_i0 = _mm256_cvtepi32_ps(vect_i0); //convert i0 back to float
++        _mm256_storeu_si256((__m256i *)&i0[0], vect_i0); //Move i0 to core
++
++        //Load sin-LUT-values to vector
++        __m256 vectF_sin = _mm256_setr_ps(sinSamples[i0[0]], sinSamples[i0[1]], sinSamples[i0[2]], sinSamples[i0[3]], sinSamples[i0[4]], sinSamples[i0[5]], sinSamples[i0[6]], sinSamples[i0[7]]);
++        __m256 vectF_cos = _mm256_setr_ps(cosSamples[i0[0]], cosSamples[i0[1]], cosSamples[i0[2]], cosSamples[i0[3]], cosSamples[i0[4]], cosSamples[i0[5]], cosSamples[i0[6]], cosSamples[i0[7]]);
++
++        //determine d for taylor-expansions
++        __m256 vectF_2Pi = _mm256_set1_ps(ERP_TWO_PI);
++        __m256 vectF_sinLutResInv = _mm256_set1_ps(ERP_SINCOS_LUT_RES_F_INV);
++        __m256 vectF_d = _mm256_mul_ps(vectF_sinLutResInv , vectF_i0); //ERP_SINCOS_LUT_RES_F_INV * i0
++        vectF_d = _mm256_sub_ps(vectF_x, vectF_d); //x -
++        vectF_d = _mm256_mul_ps(vectF_2Pi, vectF_d); //ERP_TWO_PI * d
++
++        //determine d2 for taylor-expansions
++        __m256 vectF_d2 = _mm256_mul_ps(vectF_d, vectF_05); //d2 = d * 0.5
++        vectF_d2 = _mm256_mul_ps(vectF_d2, vectF_d); //d2 * d
++
++        //get sine(x) using taylor-expansion
++        vectF_d = _mm256_mul_ps(vectF_d, vectF_cos); //d * tc
++        __m256 vectF_sinVal = _mm256_add_ps(vectF_sin, vectF_d); //sin + d
++        vectF_d2 = _mm256_mul_ps(vectF_d2, vectF_sin); //d2 * ts
++        vectF_sinVal = _mm256_sub_ps(vectF_sinVal, vectF_d2); //sin -
++
++        //determine del_t
++        __m256 vectF_delt = _mm256_mul_ps(vectF_tau, vectF_sinVal); // params->tau * sineValue
++        vectF_delt = _mm256_mul_ps(vectF_delt, vectF_stepInv); // * params->step_inv
++        vectF_delt = _mm256_sub_ps(vectF_delt, vectF_s0); // - params->S0
++
++        //store out del_t
++        _mm256_storeu_ps(&del_t[i], vectF_delt); //write to del_t
++    }
++
++
++    // number of timesteps that fit into the duration = at most the amount we had before
++    n_steps = params->nsamples_unpadded - 1;
++
++    //NOT Vectorizable -> break condition
++    // nearest_idx (see loop below) must not exceed n_unpadded - 1, so go back as far as needed to ensure that
++    while(n_steps - del_t[n_steps] >= params->nsamples_unpadded - 1)
++        n_steps--;
++
++
++    unsigned int i; float i_f;
++    for(i=0, i_f = 0.5f; i < n_steps; i++, i_f += 1.0f) {
++        // sample i arrives at the detector at i_f - del_t[i], choose nearest neighbour
++        int nearest_idx = (int)(i_f - del_t[i]);
++        // set i-th bin in resampled time series (at the pulsar) to nearest_idx bin from de-dispersed time series
++        output[i] = input[nearest_idx];
++        mean += output[i];
++    }
++
++    logMessage(debug, true,"Time series sum: %f\n", mean);
++
++    mean /= (i_f - 0.5f);
++
++    logMessage(debug, true, "Actual time series mean is: %e (length: %i)\n", mean, n_steps);
++
++
++    // Auto-Vectorized by gcc
++    // fill up with mean if necessary
++    for(unsigned int j=i ; j < params->nsamples; j++) {
++        output[j] = mean;
++    }
++
++    return 0;
++}
