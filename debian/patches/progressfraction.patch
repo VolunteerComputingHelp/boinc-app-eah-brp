@@ -2,7 +2,7 @@ Index: boinc-app-eah-brp/demod_binary.c
 ===================================================================
 --- boinc-app-eah-brp.orig/demod_binary.c
 +++ boinc-app-eah-brp/demod_binary.c
-@@ -1461,7 +1461,10 @@ thrA[4] = 0.0;
+@@ -1465,7 +1465,10 @@ thrA[4] = 0.0;
  
  #ifdef BOINCIFIED
        // update work unit fraction done (counter is 0-indexed)

@@ -1,0 +1,152 @@
+Index: boinc-app-eah-brp.new/erp_utilities.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_utilities.cpp
++++ boinc-app-eah-brp/erp_utilities.cpp
+@@ -42,8 +42,13 @@ extern const ERP_LOGLEVEL c_loglevel = L
+ extern const ERP_LOGLEVEL c_loglevel = debug;
+ #endif
+ 
+-float sinSamples[] = {0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923880f, 0.956940f, 0.980785f, 0.995185f, 1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195091f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290284f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831469f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634394f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195091f, -0.098017f, -0.000000f};
+-float cosSamples[] = {1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195090f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290285f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831470f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634393f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195090f, -0.098017f, 0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923879f, 0.956940f, 0.980785f, 0.995185f, 1.000000f};
++/*****
++ * commented out LUT-Arrays:  moved to a new seprate file (sin_cos_LUT.c)
++ * we do not do the sine-LUT-access here  in the new faster resampling-process
++ *****/
++
++//float sinSamples[] = {0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923880f, 0.956940f, 0.980785f, 0.995185f, 1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195091f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290284f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831469f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634394f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195091f, -0.098017f, -0.000000f};
++//float cosSamples[] = {1.000000f, 0.995185f, 0.980785f, 0.956940f, 0.923880f, 0.881921f, 0.831470f, 0.773010f, 0.707107f, 0.634393f, 0.555570f, 0.471397f, 0.382683f, 0.290285f, 0.195090f, 0.098017f, 0.000000f, -0.098017f, -0.195090f, -0.290285f, -0.382683f, -0.471397f, -0.555570f, -0.634393f, -0.707107f, -0.773010f, -0.831470f, -0.881921f, -0.923880f, -0.956940f, -0.980785f, -0.995185f, -1.000000f, -0.995185f, -0.980785f, -0.956940f, -0.923880f, -0.881921f, -0.831470f, -0.773011f, -0.707107f, -0.634393f, -0.555570f, -0.471397f, -0.382684f, -0.290285f, -0.195090f, -0.098017f, 0.000000f, 0.098017f, 0.195090f, 0.290285f, 0.382683f, 0.471397f, 0.555570f, 0.634393f, 0.707107f, 0.773010f, 0.831470f, 0.881921f, 0.923879f, 0.956940f, 0.980785f, 0.995185f, 1.000000f};
+ 
+ 
+ int check_byte_order()
+@@ -144,69 +149,81 @@ void logMessage(const ERP_LOGLEVEL logLe
+     va_end(varargs);
+ }
+ 
+-void sincosLUTInitialize(float **sinLUT, float **cosLUT)
+-{
++/*****
++ * commented out: this function is not needed in general
++ * only called from demod_binary.c but the results aren't used
++ * this has nothing to do with the new faster resampling
++ *****/
++
++//void sincosLUTInitialize(float **sinLUT, float **cosLUT)
++//{
+     // old unsused code, we're already initialized (hence the fixed "true")
+-    static bool initialized = true;
++//    static bool initialized = true;
++//
++//    if(!initialized) {
++//        unsigned int i;
++//        for (i=0; i <= ERP_SINCOS_LUT_RES; ++i) {
++//            sinSamples[i] = sin(ERP_TWO_PI * i * ERP_SINCOS_LUT_RES_F_INV);
++//            cosSamples[i] = cos(ERP_TWO_PI * i * ERP_SINCOS_LUT_RES_F_INV);
++//        }
++//        initialized = true;
+ 
+-    if(!initialized) {
+-        unsigned int i;
+-        for (i=0; i <= ERP_SINCOS_LUT_RES; ++i) {
+-            sinSamples[i] = sin(ERP_TWO_PI * i * ERP_SINCOS_LUT_RES_F_INV);
+-            cosSamples[i] = cos(ERP_TWO_PI * i * ERP_SINCOS_LUT_RES_F_INV);
+-        }
+-        initialized = true;
+ 
+-        /*
+         // print fixed LUT values to used for sinSamples/cosSamples
+-        for (i=0; i <= ERP_SINCOS_LUT_RES; ++i) {
+-            printf("%ff, ", sinSamples[i]);
+-        }
+-        printf("\n");
+-        for (i=0; i <= ERP_SINCOS_LUT_RES; ++i) {
+-            printf("%ff, ", cosSamples[i]);
+-            }
+-        */
+-    }
+-
+-    *sinLUT = sinSamples;
+-    *cosLUT = cosSamples;
+-}
+-
+-extern bool sincosLUTLookup(float x, float *sinX, float *cosX)
+-{
+-    float xt;
+-    int i0;
+-    float d, d2;
+-    float ts, tc;
+-    float dummy;
+-
+-    xt = modff(ERP_TWO_PI_INV * x, &dummy); // xt in (-1, 1)
+-    if ( xt < 0.0f ) {
+-        xt += 1.0f;         // xt in [0, 1 )
+-    }
++        //for (i=0; i <= ERP_SINCOS_LUT_RES; ++i) {
++        //    printf("%ff, ", sinSamples[i]);
++        //}
++        //printf("\n");
++        //for (i=0; i <= ERP_SINCOS_LUT_RES; ++i) {
++        //    printf("%ff, ", cosSamples[i]);
++        //    }
++
++//    }
++
++//    *sinLUT = sinSamples;
++//    *cosLUT = cosSamples;
++//}
++
++/*****
++ * commented out: we don't need it anymore,
++ * the functionality of this is merged directly into function run_resampling (demod_binary_resamp_cpu.c)
++ * this is necesary to provide a efficient SIMD implementation of the resampling
++ *****/
++
++//extern bool sincosLUTLookup(float x, float *sinX, float *cosX)
++//{
++//    float xt;
++//    int i0;
++//    float d, d2;
++//    float ts, tc;
++//    float dummy;
++
++//    xt = modff(ERP_TWO_PI_INV * x, &dummy); // xt in (-1, 1)
++//    if ( xt < 0.0f ) {
++//        xt += 1.0f;         // xt in [0, 1 )
++//    }
+ 
+      // sanity check
+-    if ( xt < 0.0f || xt > 1.0f ) {
+-        logMessage(error, true, "sincosLUTLookup failed: xt = %f not in [0,1)\n", xt);
+-        return false;
+-    }
++//    if ( xt < 0.0f || xt > 1.0f ) {
++//        logMessage(error, true, "sincosLUTLookup failed: xt = %f not in [0,1)\n", xt);
++//        return false;
++//    }
+ 
+     // determine LUT index
+-    i0 = (int) (xt * ERP_SINCOS_LUT_RES_F + 0.5f);
+-    d = d2 = ERP_TWO_PI * (xt - ERP_SINCOS_LUT_RES_F_INV * i0);
+-    d2 *= 0.5f * d;
++//    i0 = (int) (xt * ERP_SINCOS_LUT_RES_F + 0.5f);
++//    d = d2 = ERP_TWO_PI * (xt - ERP_SINCOS_LUT_RES_F_INV * i0);
++//    d2 *= 0.5f * d;
+ 
+     // fetch sin/cos samples
+-    ts = sinSamples[i0];
+-    tc = cosSamples[i0];
++//    ts = sinSamples[i0];
++//    tc = cosSamples[i0];
+ 
+     //use Taylor-expansions for sin/cos around samples
+-    (*sinX) = ts + d * tc - d2 * ts;
+-    (*cosX) = tc - d * ts - d2 * tc;
++//    (*sinX) = ts + d * tc - d2 * ts;
++//    (*cosX) = tc - d * ts - d2 * tc;
+ 
+-    return true;
+-}
++//    return true;
++//}
+ 
+ int resolveFilename(const char *logical, char *physical, int maxLength)
+ {
