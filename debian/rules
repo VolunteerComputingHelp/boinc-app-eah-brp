@@ -103,22 +103,24 @@ CFLAGS_APPEND += -O3
 # -O4 implies link-time optimisation with clang, fails
 endif
 
-ifeq (linux,$(DEB_TARGET_ARCH_OS))
+LOCALOPTIMISATION=
 ifneq (,$(findstring local,$(DEB_BUILD_OPTIONS)))
 LOCALOPTIMISATION="yes"
 endif
 ifeq (,$(shell dpkg-parsechangelog | egrep '^Distribution:' |egrep -v 'UNRELEASED'))
 LOCALOPTIMISATION="yes"
 endif
-endif
-
 
 #CFLAGS_APPEND += -O3
 #CFLAGS_APPEND += -fomit-frame-pointer
 
+# To check for platform-specific #defines offered for each platform, check
+#   gcc -dM -E - < /dev/null | egrep "SSE|AVX|NEON" | sort
+#
 # If the package is not meant to be distributed to main servers, then maximise optimisation
 ifneq (,$(LOCALOPTIMISATION))
   $(info I: Setting native flags for optimisation)
+  # -mnative also activates -mavx if that is available
   CFLAGS_APPEND += -march=native -mtune=native
 else
   $(info W: _Not_ setting native flags for optimisation)
@@ -201,5 +203,10 @@ override_dh_auto_clean:
 	         debian/extra/einstein_bench/testwu/stochastic_full.bank.*
 
 test:	override_dh_auto_test
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 override_dh_auto_test:
 	$(MAKE) TARGET=$(EINSTEINBINARY_TARGET) test
+else
+override_dh_auto_test:
+	# No action because of "nocheck" in DEB_BUILD_OPTIONS environment variable
+endif

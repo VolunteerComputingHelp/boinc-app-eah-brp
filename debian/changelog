@@ -1,6 +1,13 @@
+boinc-app-eah-brp (0.20170426+dfsg-13) UNRELEASED; urgency=medium
+
+  * Respecting 'nocheck' in DEB_BUILD_OPTIONS
+
+ -- Steffen Moeller <moeller@debian.org>  Thu, 25 Jan 2018 10:51:04 +0000
+
 boinc-app-eah-brp (0.20170426+dfsg-12) UNRELEASED; urgency=medium
 
   * Merged SIMD-accelerated resampling.
+  * Only performing extra test if 'nocheck' not set in DEB_BUILD_OPTIONS
 
  -- Christian Dreihsig <christian.dreihsig@t-online.de>  Tue, 23 Jan 2018 20:54:48 +0100
 
