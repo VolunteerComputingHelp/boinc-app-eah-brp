@@ -2,7 +2,8 @@ boinc-app-eah-brp (0.20170426+dfsg-13) UNRELEASED; urgency=medium
 
   * Respecting 'nocheck' in DEB_BUILD_OPTIONS
   * Added -fomit-frame-pointer to CXXFLAGS
-  * Awareness of missing -march=native in g++-5
+  * Awareness of missing -march=native in g++-5 for arm64
+  * Extra compiler flags for reducing memory footprint
 
  -- Steffen Moeller <moeller@debian.org>  Thu, 25 Jan 2018 10:51:04 +0000
 

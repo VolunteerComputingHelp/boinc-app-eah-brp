@@ -1,0 +1,53 @@
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -34,7 +34,8 @@ LIBS += -L$(EINSTEIN_RADIO_INSTALL)/lib6
+ LIBS += $(shell export PKG_CONFIG_PATH=$(EINSTEIN_RADIO_INSTALL)/lib/pkgconfig && pkg-config --libs fftw3f fftw3)
+ LIBS += $(shell xml2-config --libs)
+ LIBS += -L/usr/lib/$(dpkg-architecture -qDEB_BUILD_GNU_TYPE) -lboinc_api -lboinc
+-LIBS += -lbfd -liberty
++#LIBS += -lbfd
++LIBS += -liberty
+ LIBS += -L/usr/lib
+ LIBS += -lstdc++
+ #LIBS += -Wl,-Bdynamic
+@@ -56,7 +57,7 @@ CXXFLAGS += -DHAVE_INLINE -DBOINCIFIED
+ CXXFLAGS += -DUSE_CPU_RESAMP -DUSE_FFTW_FFT
+ 
+ DEPS = Makefile
+-OBJS = demod_binary.o demod_binary_resamp_cpu.o demod_binary_fft_fftw.o demod_binary_hs_cpu.o rngmed.o erp_boinc_ipc.o erp_getopt.o erp_getopt1.o erp_utilities.o erp_execinfo_plus.o hs_common.o
++OBJS = demod_binary.o demod_binary_resamp_cpu.o demod_binary_fft_fftw.o demod_binary_hs_cpu.o rngmed.o erp_boinc_ipc.o erp_getopt.o erp_getopt1.o erp_utilities.o hs_common.o
+ EINSTEINBINARY_TARGET ?= einsteinbinary
+ TARGET = $(EINSTEINBINARY_TARGET)
+ CXXFLAGS += -DTARGET=\"$(TARGET)\"
+@@ -149,9 +150,6 @@ erp_getopt1.o: $(DEPS) $(EINSTEIN_RADIO_
+ erp_utilities.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_utilities.cpp $(EINSTEIN_RADIO_SRC)/erp_utilities.h
+ 	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/erp_utilities.cpp
+ 
+-erp_execinfo_plus.o: $(DEPS) $(EINSTEIN_RADIO_SRC)/erp_execinfo_plus.c $(EINSTEIN_RADIO_SRC)/erp_execinfo_plus.h
+-	$(CXX) -g $(CXXFLAGS) -c $(EINSTEIN_RADIO_SRC)/erp_execinfo_plus.c
+-
+ install:
+ 	mkdir -p $(EINSTEIN_RADIO_INSTALL)/../dist
+ 	cp $(TARGET) $(EINSTEIN_RADIO_INSTALL)/../dist
+Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
++++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -175,6 +175,7 @@ static void sighandler(int sig)
+ 
+     /* print stacktrace to stderr */
+ 
++#if 0
+ #ifndef __arm__
+     logMessage(error, false, "Backtrace:\n");
+     backtracesymbols = backtrace_symbols(stackframes, nostackframes);
+@@ -184,6 +185,7 @@ static void sighandler(int sig)
+     }
+     logMessage(error, false, "End of backtrace\n\n");
+ #endif 
++#endif
+ 
+ #endif
+ 
