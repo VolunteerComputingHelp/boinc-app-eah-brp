@@ -1,0 +1,88 @@
+Index: boinc-app-eah-brp/demod_binary_fft_fftw.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_fft_fftw.c
++++ boinc-app-eah-brp/demod_binary_fft_fftw.c
+@@ -40,8 +40,8 @@
+ 
+ 
+ // TODO: do we wanna keep those global (or use proper C++, or pass them around)?
+-fftwf_complex *t_series_resamp_fft = NULL; 
+-fftwf_plan fft_plan;
++static fftwf_complex *t_series_resamp_fft = NULL;
++static fftwf_plan fft_plan;
+ extern const char fftw_version[];
+ 
+ 
+@@ -155,7 +155,7 @@ int set_up_fft(DIfloatPtr const input, D
+ }
+ 
+ 
+-int run_fft(DIfloatPtr const input, DIfloatPtr const output, const uint32_t nsamples, const unsigned int fft_size, const float norm_factor)
++int run_fft(DIfloatPtr const output, const uint32_t nsamples, const unsigned int fft_size, const float norm_factor)
+ {
+ /*
+     // unused, as the pointers for input & output of FFT are already encapsulated in the plan
+Index: boinc-app-eah-brp/demod_binary_fft_fftw.h
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_fft_fftw.h
++++ boinc-app-eah-brp/demod_binary_fft_fftw.h
+@@ -36,7 +36,7 @@ extern "C" {
+ #endif
+ 
+ extern int set_up_fft(DIfloatPtr const input, DIfloatPtr * const output, const uint32_t nsamples, const unsigned int fft_size);
+-extern int run_fft(DIfloatPtr const input, DIfloatPtr output, const uint32_t nsamples, const unsigned int fft_size, const float norm_factor);
++extern int run_fft(DIfloatPtr output, const uint32_t nsamples, const unsigned int fft_size, const float norm_factor);
+ extern int tear_down_fft(DIfloatPtr output);
+ 
+ #ifdef __cplusplus
+Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.c
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.c
+@@ -40,10 +40,8 @@
+ float *del_t = NULL;
+ 
+ 
+-int set_up_resampling(DIfloatPtr const input_dip, DIfloatPtr * const output_dip, const RESAMP_PARAMS *const params, const float *const ignoreA, 
+-const float *const ignoreB)
++int set_up_resampling(DIfloatPtr * const output_dip, const RESAMP_PARAMS *const params)
+ {
+-    //float * input = input_dip.host_ptr;
+     float ** output = & (output_dip->host_ptr);
+ 
+     // allocate memory for time offsets in modulated time
+Index: boinc-app-eah-brp/demod_binary_resamp_cpu.h
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.h
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.h
+@@ -34,7 +34,7 @@
+ extern "C" {
+ #endif
+ 
+-extern int set_up_resampling(DIfloatPtr const input, DIfloatPtr* const output, const RESAMP_PARAMS* const params, const float* const, const float* const);
++extern int set_up_resampling(DIfloatPtr* const output, const RESAMP_PARAMS* const params);
+ extern int run_resampling(DIfloatPtr const input, DIfloatPtr output, const RESAMP_PARAMS *const params);
+ extern int tear_down_resampling(DIfloatPtr const output);
+ 
+Index: boinc-app-eah-brp/demod_binary.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary.c
++++ boinc-app-eah-brp/demod_binary.c
+@@ -1166,7 +1166,7 @@ int MAIN (unsigned int argc, char *argv[
+   logMessage(debug, true, "Entered critical section: CUDA/OpenCL setup phase\n");
+ #endif
+ 
+-  result = set_up_resampling(t_series_dd, &t_series_resamp, &params, sinLUTsamples, cosLUTsamples);
++  result = set_up_resampling(&t_series_resamp, &params);
+   if (result != 0) return result;
+ 
+ #if defined(USE_CUDA) && !defined(NDEBUG)
+@@ -1300,7 +1300,7 @@ int MAIN (unsigned int argc, char *argv[
+       logMessage(debug, true, "Computing powerspectrum.\n");
+       norm_factor = 1.0/data_head.nsamples;   // normalization factor
+ 
+-      result = run_fft(t_series_resamp, powerspectrum, data_head.nsamples, fft_size, norm_factor);
++      result = run_fft(powerspectrum, data_head.nsamples, fft_size, norm_factor);
+       if (result != 0) return result;
+ 
+ 

@@ -1,0 +1,170 @@
+Index: boinc-app-eah-brp/erp_boinc_ipc.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_ipc.cpp
++++ boinc-app-eah-brp/erp_boinc_ipc.cpp
+@@ -24,8 +24,6 @@ extern ostream cout;
+ extern ostream cerr;
+ // TODO: add the other iostream stuff!
+ #else
+-#include <iostream>
+-#include <sstream>
+ #include <iomanip>
+ using namespace std;
+ #endif
+@@ -79,9 +77,9 @@ void erp_update_shmem(void)
+     xmlThrDefIndentTreeOutput(1);
+     xmlDocPtr xmlDoc = NULL;
+     xmlNodePtr rootNode = NULL, boincStatusNode = NULL;
+-    ostringstream converter;
+-    converter.exceptions(ios_base::badbit | ios_base::failbit);
+-    converter.precision(3);
++    //ostringstream converter;
++    //converter.exceptions(ios_base::badbit | ios_base::failbit);
++    //converter.precision(3);
+ 
+     // setup XML document
+     xmlDoc = xmlNewDoc(BAD_CAST("1.0"));
+@@ -89,82 +87,78 @@ void erp_update_shmem(void)
+     xmlDocSetRootElement(xmlDoc, rootNode);
+ 
+     // add child nodes (with content) to root
+-    try {
+-        converter << fixed << erp_search_info.skypos_rac;
+-        xmlNewChild(rootNode, NULL, BAD_CAST("skypos_rac"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << fixed << erp_search_info.skypos_dec;
+-        xmlNewChild(rootNode, NULL, BAD_CAST("skypos_dec"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << fixed << erp_search_info.dispersion_measure;
+-        xmlNewChild(rootNode, NULL, BAD_CAST("dispersion"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << fixed << erp_search_info.orbital_radius;
+-        xmlNewChild(rootNode, NULL, BAD_CAST("orb_radius"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << fixed << erp_search_info.orbital_period;
+-        xmlNewChild(rootNode, NULL, BAD_CAST("orb_period"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << fixed << erp_search_info.orbital_phase;
+-        xmlNewChild(rootNode, NULL, BAD_CAST("orb_phase"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
++    //try {
++    char cconverter[1017];
++    sprintf(cconverter,"%.3lf", erp_search_info.skypos_rac);
++        xmlNewChild(rootNode, NULL, BAD_CAST("skypos_rac"), BAD_CAST(cconverter));
++
++    sprintf(cconverter,"%.3lf", erp_search_info.skypos_dec);
++        xmlNewChild(rootNode, NULL, BAD_CAST("skypos_dec"), BAD_CAST(cconverter));
++
++    sprintf(cconverter,"%.3lf", erp_search_info.dispersion_measure);
++        xmlNewChild(rootNode, NULL, BAD_CAST("dispersion"), BAD_CAST(cconverter));
++
++    sprintf(cconverter,"%.3lf", erp_search_info.orbital_radius);
++        xmlNewChild(rootNode, NULL, BAD_CAST("orb_radius"), BAD_CAST(cconverter));
++
++    sprintf(cconverter,"%.3lf", erp_search_info.orbital_period);
++        xmlNewChild(rootNode, NULL, BAD_CAST("orb_period"), BAD_CAST(cconverter));
++
++    sprintf(cconverter,"%.3lf", erp_search_info.orbital_phase);
++        xmlNewChild(rootNode, NULL, BAD_CAST("orb_phase"), BAD_CAST(cconverter));
+ 
+         xmlNewChild(rootNode, NULL, BAD_CAST("power_spectrum"), BAD_CAST(powerSpectrumCString));
+ 
+-        converter << fixed << boinc_get_fraction_done();
+-        xmlNewChild(rootNode, NULL, BAD_CAST("fraction_done"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << fixed << boinc_worker_thread_cpu_time();
+-        xmlNewChild(rootNode, NULL, BAD_CAST("cpu_time"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << fixed << dtime();
+-        xmlNewChild(rootNode, NULL, BAD_CAST("update_time"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
++    //    converter << fixed << boinc_get_fraction_done();
++    sprintf(cconverter,"%.3lf", boinc_get_fraction_done());
++        xmlNewChild(rootNode, NULL, BAD_CAST("fraction_done"), BAD_CAST(cconverter));
++
++    //    converter << fixed << boinc_worker_thread_cpu_time();
++    sprintf(cconverter,"%.3lf", boinc_worker_thread_cpu_time());
++        xmlNewChild(rootNode, NULL, BAD_CAST("cpu_time"), BAD_CAST(cconverter));
++
++    //    converter << fixed << dtime();
++    sprintf(cconverter,"%.3f", dtime());
++        xmlNewChild(rootNode, NULL, BAD_CAST("update_time"), BAD_CAST(cconverter));
+ 
+         // add boinc status (with child nodes) to root
+         // TODO: use the following to control the graphics app (e.g. trigger app_init_data update!)
+         boincStatusNode = xmlNewChild(rootNode, NULL, BAD_CAST("boinc_status"), NULL);
+ 
+-        converter << dec << boinc_status.no_heartbeat;
+-        xmlNewChild(boincStatusNode, NULL, BAD_CAST("no_heartbeat"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << dec << boinc_status.suspended;
+-        xmlNewChild(boincStatusNode, NULL, BAD_CAST("suspended"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << dec << boinc_status.quit_request;
+-        xmlNewChild(boincStatusNode, NULL, BAD_CAST("quit_request"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << dec << boinc_status.reread_init_data_file;
+-        xmlNewChild(boincStatusNode, NULL, BAD_CAST("reread_init_data_file"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
+-
+-        converter << dec << boinc_status.abort_request;
+-        xmlNewChild(boincStatusNode, NULL, BAD_CAST("abort_request"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
++    //    converter << dec << boinc_status.no_heartbeat;
++    sprintf(cconverter,"%d", boinc_status.no_heartbeat);
++        xmlNewChild(boincStatusNode, NULL, BAD_CAST("no_heartbeat"), BAD_CAST(cconverter));
++
++    //    converter << dec << boinc_status.suspended;
++    sprintf(cconverter,"%d", boinc_status.suspended);
++        xmlNewChild(boincStatusNode, NULL, BAD_CAST("suspended"), BAD_CAST(cconverter));
++
++    //    converter << dec << boinc_status.quit_request;
++    sprintf(cconverter,"%d", boinc_status.quit_request);
++        xmlNewChild(boincStatusNode, NULL, BAD_CAST("quit_request"), BAD_CAST(cconverter));
++
++    //    converter << dec << boinc_status.reread_init_data_file;
++    sprintf(cconverter,"%d", boinc_status.reread_init_data_file);
++        xmlNewChild(boincStatusNode, NULL, BAD_CAST("reread_init_data_file"), BAD_CAST(cconverter));
++
++    //    converter << dec << boinc_status.abort_request;
++    sprintf(cconverter,"%d", boinc_status.abort_request);
++        xmlNewChild(boincStatusNode, NULL, BAD_CAST("abort_request"), BAD_CAST(cconverter));
+ 
+         // use default float format
+-        converter.unsetf(ios_base::floatfield);
+-
+-        converter << boinc_status.working_set_size;
+-        xmlNewChild(boincStatusNode, NULL, BAD_CAST("working_set_size"), BAD_CAST(converter.str().c_str()));
+-        converter.str("");
++        //converter.unsetf(ios_base::floatfield);
+ 
+-        converter << boinc_status.max_working_set_size;
+-        xmlNewChild(boincStatusNode, NULL, BAD_CAST("max_working_set_size"), BAD_CAST(converter.str().c_str()));
+-    }
+-    catch(ios_base::failure) {
+-        fprintf(stderr, "Error converting shared memory data!\n");
+-    }
++    //    converter << boinc_status.working_set_size;
++    sprintf(cconverter,"%.3lf", boinc_status.working_set_size);
++        xmlNewChild(boincStatusNode, NULL, BAD_CAST("working_set_size"), BAD_CAST(cconverter));
++
++    //    converter << boinc_status.max_working_set_size;
++    sprintf(cconverter,"%.3lf", boinc_status.max_working_set_size);
++        xmlNewChild(boincStatusNode, NULL, BAD_CAST("max_working_set_size"), BAD_CAST(cconverter));
++    //}
++    //catch(ios_base::failure) {
++    //    fprintf(stderr, "Error converting shared memory data!\n");
++    //}
+ 
+     // dump xml document
+     xmlChar *buffer;

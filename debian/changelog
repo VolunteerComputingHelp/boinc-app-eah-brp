@@ -1,3 +1,9 @@
+boinc-app-eah-brp (0.20170426+dfsg-14) UNRELEASED; urgency=medium
+
+  * Minimisation of binary.
+
+ -- Steffen Moeller <moeller@debian.org>  Tue, 20 Feb 2018 18:29:33 +0100
+
 boinc-app-eah-brp (0.20170426+dfsg-13) UNRELEASED; urgency=medium
 
   * Respecting 'nocheck' in DEB_BUILD_OPTIONS

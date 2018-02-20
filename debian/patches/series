@@ -29,3 +29,7 @@ progressfraction.patch
 introduce_const.patch
 benchmark.patch
 no_execinfo_plus_files.patch
+minimising1.patch
+eliminate_1st_try.patch
+eliminate_2nd_try.patch
+tiny_optimisations.patch

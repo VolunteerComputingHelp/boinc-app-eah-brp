@@ -90,6 +90,7 @@ CFLAGS_APPEND += -I/usr/include/boinc -I/usr/include/boinc/lib -I/usr/include/bo
 CXX_VERSION_LONG=$(shell $(CXX) --version|head -n 1)
 
 #CFLAGS_APPEND += -fssa-dce
+CFLAGS_APPEND += -fno-exceptions
 CFLAGS_APPEND += -fdce
 CFLAGS_APPEND += -ffunction-sections -fdata-sections
 LDFLAGS += -Wl,--gc-sections

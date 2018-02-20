@@ -1,0 +1,26 @@
+Index: boinc-app-eah-brp/Makefile
+===================================================================
+--- boinc-app-eah-brp.orig/Makefile
++++ boinc-app-eah-brp/Makefile
+@@ -37,7 +37,7 @@ LIBS += -L/usr/lib/$(dpkg-architecture -
+ #LIBS += -lbfd
+ LIBS += -liberty
+ LIBS += -L/usr/lib
+-LIBS += -lstdc++
++#LIBS += -lstdc++
+ #LIBS += -Wl,-Bdynamic
+ LIBS += -lxml2 -lgsl -lgslcblas
+ LIBS += -lpthread -lm -lc
+Index: boinc-app-eah-brp/demod_binary_resamp_cpu.c
+===================================================================
+--- boinc-app-eah-brp.orig/demod_binary_resamp_cpu.c
++++ boinc-app-eah-brp/demod_binary_resamp_cpu.c
+@@ -26,7 +26,7 @@
+ #include "demod_binary_resamp_cpu.h"
+ 
+ #include <stdlib.h>
+-#include <gsl/gsl_math.h>
++//#include <gsl/gsl_math.h>
+ #include <fftw3.h>
+ #include "demod_binary.h"
+ #include "erp_utilities.h"

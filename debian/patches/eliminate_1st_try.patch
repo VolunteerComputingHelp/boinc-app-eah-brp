@@ -1,0 +1,40 @@
+Index: boinc-app-eah-brp/erp_boinc_ipc.cpp
+===================================================================
+--- boinc-app-eah-brp.orig/erp_boinc_ipc.cpp
++++ boinc-app-eah-brp/erp_boinc_ipc.cpp
+@@ -51,11 +51,13 @@ void erp_update_shmem(void)
+     if (!shmem) return;
+ 
+     // serialize power spectrum data;
+-    ostringstream powerSpectrumString;
+-    powerSpectrumString.exceptions(ios_base::badbit | ios_base::failbit);
++    char powerSpectrumCString[POWERSPECTRUM_BINS*2+1];
++    //ostringstream powerSpectrumString;
++    //powerSpectrumString.exceptions(ios_base::badbit | ios_base::failbit);
+     for (int i = 0; i < POWERSPECTRUM_BINS; ++i) {
++        sprintf(powerSpectrumCString+2*i,"%02x", (int)erp_search_info.power_spectrum[i]);
+         // add zero-padded hex string of bin value
+-        try {
++       /* try {
+             powerSpectrumString	<< setw(2) << setfill('0') << hex
+             << (int)erp_search_info.power_spectrum[i];
+         }
+@@ -63,7 +65,9 @@ void erp_update_shmem(void)
+         {
+             fprintf(stderr, "Error preparing power spectrum shared memory data!\n");
+         }
++       */
+     }
++    powerSpectrumCString[POWERSPECTRUM_BINS*2] = 0;
+ 
+     // update BOINC status information
+     boinc_get_status(&boinc_status);
+@@ -110,7 +114,7 @@ void erp_update_shmem(void)
+         xmlNewChild(rootNode, NULL, BAD_CAST("orb_phase"), BAD_CAST(converter.str().c_str()));
+         converter.str("");
+ 
+-        xmlNewChild(rootNode, NULL, BAD_CAST("power_spectrum"), BAD_CAST(powerSpectrumString.str().data()));
++        xmlNewChild(rootNode, NULL, BAD_CAST("power_spectrum"), BAD_CAST(powerSpectrumCString));
+ 
+         converter << fixed << boinc_get_fraction_done();
+         xmlNewChild(rootNode, NULL, BAD_CAST("fraction_done"), BAD_CAST(converter.str().c_str()));

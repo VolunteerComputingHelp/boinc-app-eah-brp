@@ -35,6 +35,15 @@ Index: boinc-app-eah-brp/erp_boinc_wrapper.cpp
 ===================================================================
 --- boinc-app-eah-brp.orig/erp_boinc_wrapper.cpp
 +++ boinc-app-eah-brp/erp_boinc_wrapper.cpp
+@@ -131,7 +131,7 @@ static void sighandler(int sig)
+     /* for glibc stacktrace */
+     static void *stackframes[64];
+     static size_t nostackframes;
+-    static char **backtracesymbols = NULL;
++    //static char **backtracesymbols = NULL;
+ #ifdef __i386__
+     ucontext_t *uc = (ucontext_t *)secret;
+ #endif
 @@ -175,6 +175,7 @@ static void sighandler(int sig)
  
      /* print stacktrace to stderr */
