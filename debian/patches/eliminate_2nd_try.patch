@@ -53,7 +53,7 @@ Index: boinc-app-eah-brp/erp_boinc_ipc.cpp
 -        xmlNewChild(rootNode, NULL, BAD_CAST("orb_phase"), BAD_CAST(converter.str().c_str()));
 -        converter.str("");
 +    //try {
-+    char cconverter[1017];
++    char cconverter[57];
 +    sprintf(cconverter,"%.3lf", erp_search_info.skypos_rac);
 +        xmlNewChild(rootNode, NULL, BAD_CAST("skypos_rac"), BAD_CAST(cconverter));
 +
