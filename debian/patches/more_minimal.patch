@@ -8,10 +8,9 @@ Index: boinc-app-eah-brp/erp_boinc_ipc.cpp
  
 -BOINC_OPTIONS erp_boinc_options;
 -APP_INIT_DATA erp_app_init_data;
--t_pulsar_search erp_search_info;
 +static BOINC_OPTIONS erp_boinc_options;
 +static APP_INIT_DATA erp_app_init_data;
-+static t_pulsar_search erp_search_info;
+ t_pulsar_search erp_search_info;
  
  #include "graphics2.h"
  
@@ -20,16 +19,3 @@ Index: boinc-app-eah-brp/erp_boinc_ipc.cpp
  
  void erp_update_shmem(void)
  {
-Index: boinc-app-eah-brp/erp_boinc_ipc.h
-===================================================================
---- boinc-app-eah-brp.orig/erp_boinc_ipc.h
-+++ boinc-app-eah-brp/erp_boinc_ipc.h
-@@ -43,8 +43,6 @@ extern "C" {
-         unsigned char power_spectrum[POWERSPECTRUM_BINS];
-     } t_pulsar_search;
- 
--    extern t_pulsar_search erp_search_info;
--
-     extern int erp_setup_shmem(void);
- 
-     extern void erp_update_shmem(void);
