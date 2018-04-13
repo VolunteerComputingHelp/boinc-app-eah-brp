@@ -59,7 +59,7 @@ echo "I: Computing wisdom file for BRP4 and FGRP projects. This will take severa
 echo
 
 if [ -r "/etc/fftw/$(basename $DESTFILE)" ]; then
-	echo "W: Rename existing '/etc/fftw/$(basename $DESTFILE)' if you have not generated it yourself prior to moving the wisdom file newly generated in '$(DESTFILE)'."
+	echo "W: Rename existing '/etc/fftw/$(basename $DESTFILE)' if you have not generated it yourself prior to moving the wisdom file newly generated in '$DESTFILE'."
 	echo
 fi
 
